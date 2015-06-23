@@ -1,8 +1,8 @@
-application: helloworld
+application: vin100-984
 version: 1
 runtime: php
 api_version: 1
 
 handlers:
 - url: /.*
-  script: helloworld.php
+  script: index.php
