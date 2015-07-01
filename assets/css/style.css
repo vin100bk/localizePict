@@ -1,0 +1,28 @@
+* {
+	box-sizing: border-box;
+}
+
+/**
+ * Map section
+ */
+#map {
+	float:left;
+	width:75%;
+	height:100vh;
+}
+
+/**
+ * Sidebar section
+ */
+#sidebar {
+	float:right;
+	width:25%;
+	height:100vh;
+}
+
+/**
+ * Classes
+ */
+.clearfix {
+	clear:both;
+}
