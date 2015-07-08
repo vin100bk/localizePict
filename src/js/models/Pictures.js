@@ -30,8 +30,10 @@ var Pictures = Backbone.Collection.extend({
 
                         // Browse all pictures
                         _.each(data.data, function (element, index, list) {
-                            if (_.has(element, 'place')) {
-                                // The picture has a place. Other pictures are not interesting for us
+                            if (_.has(element, 'place') && _.has(element, 'picture') && _.has(element, 'pictures')) {
+                                /**
+                                 * Mandatory fields: icon, pictures and location
+                                 */
                                 pictures.push(new Picture({
                                     provider: {},
                                     album: element.album,
