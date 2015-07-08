@@ -1,3 +1,6 @@
+/**
+ * Tests suite for Picture model
+ */
 describe('Picture', function () {
     beforeEach(function () {
         this.picture = new Picture({
