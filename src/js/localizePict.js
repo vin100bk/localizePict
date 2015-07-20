@@ -15,17 +15,9 @@ var LocalizePict = Backbone.View.extend({
      */
     initialize: function () {
         this.model = new Pictures();
-        this.listenTo(this.model, 'reset', this.render);
+        this.model.on('reset', this.update, this);
         this.initMap();
         this.render();
-    },
-
-    /**
-     * Render the application
-     */
-    render: function () {
-        this.populateMap();
-        this.renderSideBar();
     },
 
     /**
@@ -36,7 +28,27 @@ var LocalizePict = Backbone.View.extend({
             center: {lat: -34.397, lng: 150.644},
             zoom: 2
         };
-        this.map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+        var map = document.getElementById('map');
+        if(map) {
+            this.map = new google.maps.Map(map, mapOptions);
+        }
+    },
+
+    /**
+     * Initial render
+     */
+    render: function () {
+        return this;
+    },
+
+    /**
+     * Update the application
+     */
+    update: function() {
+        console.log('testtttt');
+        this.populateMap();
+        this.renderSideBar();
     },
 
     /**
@@ -80,7 +92,6 @@ var LocalizePict = Backbone.View.extend({
      * Render the sidebar
      */
     renderSideBar: function () {
-        $('#sidebar').append('<a href="#" id="addPictFb">+ Fb</a>');
     },
 
     /**
@@ -88,6 +99,7 @@ var LocalizePict = Backbone.View.extend({
      */
     addFbPictures: function (e) {
         e.preventDefault();
+        // @todo: Handle errors
         this.model.addFromFb();
     },
 });

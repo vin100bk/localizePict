@@ -15,12 +15,20 @@
     <script src="bower_components/jasmine/lib/jasmine-core/jasmine.js"></script>
     <script src="bower_components/jasmine/lib/jasmine-core/jasmine-html.js"></script>
     <script src="bower_components/jasmine/lib/jasmine-core/boot.js"></script>
+    <script src="bower_components/jasmine-jquery/lib/jasmine-jquery.js"></script>
 
     <!-- include source files here... -->
+    <script src="../src/js/localizePict.js"></script>
     <script src="../src/js/models/Picture.js"></script>
+    <script src="../src/js/models/Pictures.js"></script>
 
     <!-- include spec files here... -->
     <script src="spec/PictureSpec.js"></script>
+    <script src="spec/PicturesSpec.js"></script>
+
+    <script>
+        jasmine.getJSONFixtures().fixturesPath = 'data';
+    </script>
 </head>
 
 <body>

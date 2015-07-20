@@ -19,18 +19,31 @@ var Pictures = Backbone.Collection.extend({
             });
 
             FB.getLoginStatus(function (response) {
+                if(!_.has(response, 'status')) {
+                    throw {
+                        name: 'ConnexionException',
+                        message: 'Error while connecting to Facebook.'
+                    }
+                }
+
                 if (response.status === 'connected') {
                     FB.api('/me/photos', 'get', {
                         limit: 500,
                         date_format: 'U'
                         //fields: 'place,album,picture,images,place,name,link,created_time'
-                    }, function (data) {
+                    }, function (json) {
+                        // Check JSON
+                        if (!_.has(json, 'data')) {
+                            throw {
+                                name: 'JsonException',
+                                message: 'Error while retrieving pictures from Facebook.'
+                            }
+                        }
                         // Contains all pictures
                         var pictures = [];
-
                         // Browse all pictures
-                        _.each(data.data, function (element, index, list) {
-                            if (_.has(element, 'place') && _.has(element, 'picture') && _.has(element, 'pictures')) {
+                        _.each(json.data, function (element, index, list) {
+                            if (_.has(element, 'place') && _.has(element, 'picture') && _.has(element, 'source')) {
                                 /**
                                  * Mandatory fields: icon, pictures and location
                                  */
@@ -38,7 +51,7 @@ var Pictures = Backbone.Collection.extend({
                                     provider: {},
                                     album: element.album,
                                     icon: element.picture,
-                                    pictures: element.images,
+                                    picture: element.source,
                                     location: {
                                         latitude: element.place.location.latitude,
                                         longitude: element.place.location.longitude,
@@ -52,8 +65,7 @@ var Pictures = Backbone.Collection.extend({
                                 }));
                             }
                         });
-
-                        // Reset the collection with the new photos list (@todo: handle several providers)
+                        // Reset the collection with the new pictures list (@todo: handle several providers)
                         self.reset(pictures);
                     });
                 } else {
@@ -61,6 +73,5 @@ var Pictures = Backbone.Collection.extend({
                 }
             });
         });
-
     },
 });
