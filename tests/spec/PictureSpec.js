@@ -5,9 +5,13 @@ describe('Picture model', function () {
 
     describe('.initialize()', function () {
 
-        it('Should return an error without pid', function () {
-            expect(function () {
-                new Picture({
+        describe('With minimum data', function () {
+
+            beforeEach(function () {
+                spyOn(Picture.__super__, 'initialize');
+                spyOn(Picture.prototype, 'generateId');
+                this.picture = new Picture({
+                    pid: '1',
                     icon: 'http://myicon.jpg',
                     picture: 'http://myoriginal.jpg',
                     location: {
@@ -15,81 +19,112 @@ describe('Picture model', function () {
                         longitude: '-73.941141',
                     }
                 });
-            }).toThrow(jasmine.any(Object));
-        });
+            });
 
-        it('Should return an error without icon', function () {
-            expect(function () {
-                new Picture({
+            it('Should call the parent .initialize()', function () {
+                expect(Picture.__super__.initialize).toHaveBeenCalledWith({
                     pid: '1',
+                    icon: 'http://myicon.jpg',
                     picture: 'http://myoriginal.jpg',
                     location: {
                         latitude: '40.713509',
                         longitude: '-73.941141',
                     }
-                });
-            }).toThrow(jasmine.any(Object));
+                }, undefined);
+            });
+
+            it('Should call generateId()', function () {
+                expect(Picture.prototype.generateId).toHaveBeenCalled();
+            });
         });
 
-        it('Should return an error without picture', function () {
-            expect(function () {
-                new Picture({
-                    pid: '1',
-                    icon: 'http://myicon.jpg',
-                    location: {
-                        latitude: '40.713509',
-                        longitude: '-73.941141',
-                    }
-                });
-            }).toThrow(jasmine.any(Object));
-        });
+        describe('Without minimum data', function () {
 
-        it('Should return an error without location', function () {
-            expect(function () {
-                new Picture({
-                    pid: '1',
-                    icon: 'http://myicon.jpg',
-                    picture: 'http://myoriginal.jpg'
-                });
-            }).toThrow(jasmine.any(Object));
-        });
+            it('Should return an error without pid', function () {
+                expect(function () {
+                    new Picture({
+                        icon: 'http://myicon.jpg',
+                        picture: 'http://myoriginal.jpg',
+                        location: {
+                            latitude: '40.713509',
+                            longitude: '-73.941141',
+                        }
+                    });
+                }).toThrow(jasmine.any(Object));
+            });
 
-        it('Should return an error with an empty location', function() {
-            expect(function () {
-                new Picture({
-                    pid: '1',
-                    icon: 'http://myicon.jpg',
-                    picture: 'http://myoriginal.jpg',
-                    location: {
-                    }
-                });
-            }).toThrow(jasmine.any(Object));
-        });
+            it('Should return an error without icon', function () {
+                expect(function () {
+                    new Picture({
+                        pid: '1',
+                        picture: 'http://myoriginal.jpg',
+                        location: {
+                            latitude: '40.713509',
+                            longitude: '-73.941141',
+                        }
+                    });
+                }).toThrow(jasmine.any(Object));
+            });
 
-        it('Should return an error with a location without latitude', function() {
-            expect(function () {
-                new Picture({
-                    pid: '1',
-                    icon: 'http://myicon.jpg',
-                    picture: 'http://myoriginal.jpg',
-                    location: {
-                        longitude: '-73.941141'
-                    }
-                });
-            }).toThrow(jasmine.any(Object));
-        });
+            it('Should return an error without picture', function () {
+                expect(function () {
+                    new Picture({
+                        pid: '1',
+                        icon: 'http://myicon.jpg',
+                        location: {
+                            latitude: '40.713509',
+                            longitude: '-73.941141',
+                        }
+                    });
+                }).toThrow(jasmine.any(Object));
+            });
 
-        it('Should return an error with a location without longitude', function() {
-            expect(function () {
-                new Picture({
-                    pid: '1',
-                    icon: 'http://myicon.jpg',
-                    picture: 'http://myoriginal.jpg',
-                    location: {
-                        latitude: '40.713509',
-                    }
-                });
-            }).toThrow(jasmine.any(Object));
+            it('Should return an error without location', function () {
+                expect(function () {
+                    new Picture({
+                        pid: '1',
+                        icon: 'http://myicon.jpg',
+                        picture: 'http://myoriginal.jpg'
+                    });
+                }).toThrow(jasmine.any(Object));
+            });
+
+            it('Should return an error with an empty location', function () {
+                expect(function () {
+                    new Picture({
+                        pid: '1',
+                        icon: 'http://myicon.jpg',
+                        picture: 'http://myoriginal.jpg',
+                        location: {}
+                    });
+                }).toThrow(jasmine.any(Object));
+            });
+
+            it('Should return an error with a location without latitude', function () {
+                expect(function () {
+                    new Picture({
+                        pid: '1',
+                        icon: 'http://myicon.jpg',
+                        picture: 'http://myoriginal.jpg',
+                        location: {
+                            longitude: '-73.941141'
+                        }
+                    });
+                }).toThrow(jasmine.any(Object));
+            });
+
+            it('Should return an error with a location without longitude', function () {
+                expect(function () {
+                    new Picture({
+                        pid: '1',
+                        icon: 'http://myicon.jpg',
+                        picture: 'http://myoriginal.jpg',
+                        location: {
+                            latitude: '40.713509',
+                        }
+                    });
+                }).toThrow(jasmine.any(Object));
+            });
         });
     });
 
@@ -252,6 +287,42 @@ describe('Picture model', function () {
                     expect(this.location.country).toBeUndefined();
                 });
             });
+        });
+    });
+
+    describe('.generateId()', function () {
+
+        it('Should generate an ID with the provider prefix (provider is in data)', function() {
+            var picture = new Picture({
+                pid: '1',
+                provider: new FacebookProvider(),
+                icon: 'http://myicon.jpg',
+                picture: 'http://myoriginal.jpg',
+                location: {
+                    latitude: '40.713509',
+                    longitude: '-73.941141',
+                }
+            });
+            spyOn(picture, 'set');
+            picture.generateId();
+
+            expect(picture.set).toHaveBeenCalledWith('id', picture.get('provider').get('prefix') + '1');
+        });
+
+        it('Should generate an ID which is equals to the picture ID (provider is not in data)', function() {
+            var picture = new Picture({
+                pid: '1',
+                icon: 'http://myicon.jpg',
+                picture: 'http://myoriginal.jpg',
+                location: {
+                    latitude: '40.713509',
+                    longitude: '-73.941141',
+                }
+            });
+            spyOn(picture, 'set');
+            picture.generateId();
+
+            expect(picture.set).toHaveBeenCalledWith('id', '1');
         });
     });
 });
