@@ -4,12 +4,53 @@
 describe('Pictures', function () {
 
     beforeEach(function () {
+        spyOn(LocalizePict.prototype, 'update').and.callThrough();
         this.app = new LocalizePict();
         this.pictures = this.app.model;
     });
 
     it('An intiale collection should be empty', function () {
         expect(this.pictures.length).toEqual(0);
+    });
+
+    describe('.get()', function () {
+
+        beforeEach(function () {
+            this.pictures = new Pictures([
+                new Picture({
+                    pid: '1',
+                    icon: 'http://myicon1.jpg',
+                    picture: 'http://myoriginal1.jpg',
+                    location: {
+                        latitude: '40.713509',
+                        longitude: '-73.941141',
+                    }
+                }),
+                new Picture({
+                    pid: '2',
+                    icon: 'http://myicon2.jpg',
+                    picture: 'http://myoriginal2.jpg',
+                    location: {
+                        latitude: '40.713509',
+                        longitude: '-73.941141',
+                    }
+                })]);
+        });
+
+        it('Should retrieve the correct picture', function() {
+            expect(this.pictures.get('1').get('icon')).toEqual('http://myicon1.jpg');
+        });
+
+        it('Should return undefined if there is no picture with a specified ID', function() {
+            expect(this.pictures.get('3')).toBeUndefined();
+        });
+    });
+
+    describe('.set()', function() {
+
+        it('Should call the parent .set()');
+
+        it('Should trigger an event "set"');
     });
 
     describe('.addFromFb()', function () {
@@ -22,8 +63,8 @@ describe('Pictures', function () {
         beforeEach(function () {
             // Create a psy for the SDK loading
             spyOn($, 'getScript');
-            // Create a spy for reset()
-            spyOn(this.pictures, 'reset');
+            // Create a spy for set()
+            spyOn(this.pictures, 'set').and.callThrough();
             // Execute the function
             this.pictures.addFromFb();
             // Create a mock for the FB object
@@ -109,40 +150,66 @@ describe('Pictures', function () {
                         this.apiCallback(this.data['fbPicturesExample.json']);
                     });
 
-                    it('Should call reset()', function () {
-                        expect(this.pictures.reset).toHaveBeenCalledWith(jasmine.any(Array));
+                    it('Should call set()', function () {
+                        expect(this.pictures.set).toHaveBeenCalledWith(jasmine.any(Array));
                         // Get the array built from json data
-                        var array = this.pictures.reset.calls.argsFor(0)[0];
+                        var array = this.pictures.set.calls.argsFor(0)[0];
                         expect(array.length).toEqual(4);
+                        expect(array[0]).toEqual(jasmine.any(Picture));
+                    });
+
+                    it('Should notify the view about the change', function() {
+                        expect(LocalizePict.prototype.update).toHaveBeenCalled();
+                    });
+
+                    it('Should assign an array of Picture', function () {
+                        var picturesArray = this.pictures.models;
+                        expect(picturesArray.length).toEqual(4);
+                        expect(picturesArray[0]).toEqual(jasmine.any(Picture));
+                    });
+
+                    it('Should retrieve the correct picture', function () {
+                        var prefix = new FacebookProvider().get('prefix');
+                        expect(this.pictures.get(prefix + '5').get('label')).toEqual('My fake picture number 5');
+                    });
+
+                    it('Should not retrieve a picture without localized information', function() {
+                        var prefix = new FacebookProvider().get('prefix');
+                        expect(this.pictures.get(prefix + '1')).toBeUndefined();
                     });
                 });
 
-                it('Without localized pictures, should call reset() with an empty array as parameter', function () {
-                    this.apiCallback(this.data['fbPicturesNoPictures.json']);
-                    expect(this.pictures.reset).toHaveBeenCalledWith(jasmine.any(Array));
-                    // Get the array built from json data
-                    var array = this.pictures.reset.calls.argsFor(0)[0];
-                    expect(array.length).toEqual(0);
-                });
+                describe('Without localized pictures', function () {
+                    it('Should not call set()', function () {
+                        this.apiCallback(this.data['fbPicturesNoPictures.json']);
+                        expect(this.pictures.set).not.toHaveBeenCalled();
+                    });
 
-                it('Without pictures, should call reset() with an empty array as parameter', function () {
-                    this.apiCallback(this.data['fbPicturesNoData.json']);
-                    expect(this.pictures.reset).toHaveBeenCalledWith(jasmine.any(Array));
-                    // Get the array built from json data
-                    var array = this.pictures.reset.calls.argsFor(0)[0];
-                    expect(array.length).toEqual(0);
+                    it('Should not call set() without pictures at all', function () {
+                        this.apiCallback(this.data['fbPicturesNoData.json']);
+                        expect(this.pictures.set).not.toHaveBeenCalled();
+                    });
+
+                    it('Should notify the view about the change', function() {
+                        this.apiCallback(this.data['fbPicturesNoPictures.json']);
+                        expect(LocalizePict.prototype.update).not.toHaveBeenCalled();
+                    });
                 });
             });
 
             describe('With a non standart JSON (empty or corrupted JSON)', function () {
                 it('Should throw an error with an empty string as JSON', function () {
                     expect(this.apiCallback.bind(null, '')).toThrow();
-                    expect(this.pictures.reset).not.toHaveBeenCalled();
+                    expect(this.pictures.set).not.toHaveBeenCalled();
                 });
 
                 it('Should throw an error with a corrupted JSON', function () {
                     expect(this.apiCallback.bind(null, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus vitae rutrum est. Pellentesque ut ligula nec justo porta pretium. Aliquam.')).toThrow();
-                    expect(this.pictures.reset).not.toHaveBeenCalled();
+                    expect(this.pictures.set).not.toHaveBeenCalled();
+                });
+
+                it('Should not notify the view about a change', function() {
+                    expect(LocalizePict.prototype.update).not.toHaveBeenCalled();
                 });
             });
         });

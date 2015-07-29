@@ -6,6 +6,16 @@ var Pictures = Backbone.Collection.extend({
     model: Picture,
 
     /**
+     * @Override
+     * Trigger an event after set operation
+     */
+    set: function () {
+        // @todo: handle duplicates on multiples providers
+        Pictures.__super__.set.apply(this, arguments);
+        this.trigger('set');
+    },
+
+    /**
      * Add pictures from Facebook to the collection
      */
     addFromFb: function () {
@@ -19,7 +29,7 @@ var Pictures = Backbone.Collection.extend({
             });
 
             FB.getLoginStatus(function (response) {
-                if(!_.has(response, 'status')) {
+                if (!_.has(response, 'status')) {
                     throw {
                         name: 'ConnexionException',
                         message: 'Error while connecting to Facebook.'
@@ -43,12 +53,13 @@ var Pictures = Backbone.Collection.extend({
                         var pictures = [];
                         // Browse all pictures
                         _.each(json.data, function (element, index, list) {
-                            if (_.has(element, 'place') && _.has(element, 'picture') && _.has(element, 'source')) {
+                            if (_.has(element, 'id') && _.has(element, 'place') && _.has(element, 'picture') && _.has(element, 'source')) {
                                 /**
                                  * Mandatory fields: icon, pictures and location
                                  */
                                 pictures.push(new Picture({
-                                    provider: {},
+                                    pid: element.id,
+                                    provider: new FacebookProvider(),
                                     album: element.album,
                                     icon: element.picture,
                                     picture: element.source,
@@ -65,13 +76,16 @@ var Pictures = Backbone.Collection.extend({
                                 }));
                             }
                         });
-                        // Reset the collection with the new pictures list (@todo: handle several providers)
-                        self.reset(pictures);
+
+                        if (pictures.length > 0) {
+                            // Set new picture in the collection
+                            self.set(pictures);
+                        }
                     });
                 } else {
                     FB.login({scope: 'user_photos'});
                 }
             });
         });
-    },
+    }
 });
