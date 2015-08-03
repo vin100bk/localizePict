@@ -15,7 +15,7 @@ var LocalizePict = Backbone.View.extend({
      */
     initialize: function () {
         this.model = new Pictures();
-        this.model.on('reset', this.update, this);
+        this.model.on('set', this.update, this);
         this.initMap();
         this.render();
     },
@@ -46,7 +46,6 @@ var LocalizePict = Backbone.View.extend({
      * Update the application
      */
     update: function() {
-        console.log('testtttt');
         this.populateMap();
         this.renderSideBar();
     },
@@ -92,6 +91,10 @@ var LocalizePict = Backbone.View.extend({
      * Render the sidebar
      */
     renderSideBar: function () {
+        var self = this;
+        this.model.each(function (picture) {
+
+        });
     },
 
     /**

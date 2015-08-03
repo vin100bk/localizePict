@@ -48,9 +48,39 @@ describe('Pictures', function () {
 
     describe('.set()', function() {
 
-        it('Should call the parent .set()');
+        beforeEach(function () {
+            this.picturesData = [
+                new Picture({
+                    pid: '1',
+                    icon: 'http://myicon1.jpg',
+                    picture: 'http://myoriginal1.jpg',
+                    location: {
+                        latitude: '40.713509',
+                        longitude: '-73.941141',
+                    }
+                }),
+                new Picture({
+                    pid: '2',
+                    icon: 'http://myicon2.jpg',
+                    picture: 'http://myoriginal2.jpg',
+                    location: {
+                        latitude: '40.713509',
+                        longitude: '-73.941141',
+                    }
+                })];
+        });
 
-        it('Should trigger an event "set"');
+        it('Should set new pictures in the collection', function() {
+            expect(this.pictures.length).toEqual(0);
+            this.pictures.set(this.picturesData);
+            expect(this.pictures.length).toEqual(2);
+        });
+
+        it('Should trigger an event "set"', function() {
+            spyOn(this.pictures, 'trigger');
+            this.pictures.set(this.picturesData);
+            expect(this.pictures.trigger).toHaveBeenCalledWith('set');
+        });
     });
 
     describe('.addFromFb()', function () {
