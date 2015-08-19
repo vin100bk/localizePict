@@ -10,7 +10,13 @@
     <body>
         <section id="map"></section>
         <section id="sidebar">
-            <a href="#" id="addPictFb">+ Fb</a>
+            <section id="sidebar-pictures"></section>
+
+            <section id="sidebar-addButtons">
+                <ul>
+                    <li><a href="#" id="addPictFb">+ Fb</a></li>
+                </ul>
+            </section>
         </section>
 
         <div id="fb-root"></div>
@@ -19,6 +25,7 @@
         <script src="bower_components/underscore/underscore-min.js"></script>
         <script src="bower_components/backbone/backbone-min.js"></script>
 
+        <script src="src/js/models/Provider.js"></script>
         <script src="src/js/models/Picture.js"></script>
         <script src="src/js/models/Pictures.js"></script>
         <script src="src/js/localizePict.js"></script>

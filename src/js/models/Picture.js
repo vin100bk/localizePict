@@ -12,7 +12,39 @@ var Picture = Backbone.Model.extend({
      * @param attributes
      * @param options
      */
-    initialize: function (attributes, options) {
+    constructor: function (attributes, options) {
+        Picture.__super__.constructor.apply(this, [attributes, $.extend(options, {parse: true})]);
+    },
+
+    /**
+     * Set data for this picture
+     * @param attributes
+     * @param options
+     */
+    set: function(attributes, options) {
+        Picture.__super__.set.apply(this, [attributes, $.extend(options, {validate: true})]);
+    },
+
+    /**
+     * Parse a picture
+     * Add its ID
+     * @param picture: picture data
+     * @param options
+     * @returns the picture with its ID
+     */
+    parse: function(picture, options) {
+        if (_.has(picture, 'provider')) {
+            // If provider is in attributes, we use it to prefix the ID attribute
+            picture.id = picture.provider.get('prefix') + picture.pid;
+        } else {
+            // If not, id = pid (not recommended with multiple providers)
+            picture.id = picture.pid;
+        }
+
+        return picture;
+    },
+
+    validate: function (attributes, options) {
         /**
          * Check mandatory fields
          */
@@ -45,24 +77,5 @@ var Picture = Backbone.Model.extend({
                 message: 'The location is not valid'
             }
         }
-
-        Picture.__super__.initialize.apply(this, [attributes, options]);
-        this.generateId();
-    },
-
-    /**
-     * Generate the ID from the picture ID and the provider prefix
-     */
-    generateId: function () {
-        var id;
-        if (_.has(this.attributes, 'provider')) {
-            // If provider is in attributes, we use it to prefix the ID attribute
-            id = this.get('provider').get('prefix') + this.get('pid');
-        } else {
-            // If not, id = pid (not recommended with multiple providers)
-            id = this.get('pid');
-        }
-
-        this.set('id', id);
     }
 });

@@ -3,13 +3,24 @@
  */
 describe('Picture model', function () {
 
-    describe('.initialize()', function () {
+    describe('.constructor()', function () {
 
         describe('With minimum data', function () {
 
             beforeEach(function () {
-                spyOn(Picture.__super__, 'initialize');
-                spyOn(Picture.prototype, 'generateId');
+                spyOn(Picture.__super__, 'constructor').and.callThrough();
+                spyOn(Picture.prototype, 'parse').and.returnValue({
+                    id: '1',
+                    pid: '1',
+                    icon: 'http://myicon.jpg',
+                    picture: 'http://myoriginal.jpg',
+                    location: {
+                        latitude: '40.713509',
+                        longitude: '-73.941141',
+                    }
+                });
+                spyOn(Picture.prototype, 'set');
+
                 this.picture = new Picture({
                     pid: '1',
                     icon: 'http://myicon.jpg',
@@ -21,8 +32,8 @@ describe('Picture model', function () {
                 });
             });
 
-            it('Should call the parent .initialize()', function () {
-                expect(Picture.__super__.initialize).toHaveBeenCalledWith({
+            it('Should call the parent .constructor() with the parse option', function () {
+                expect(Picture.__super__.constructor).toHaveBeenCalledWith({
                     pid: '1',
                     icon: 'http://myicon.jpg',
                     picture: 'http://myoriginal.jpg',
@@ -30,11 +41,32 @@ describe('Picture model', function () {
                         latitude: '40.713509',
                         longitude: '-73.941141',
                     }
-                }, undefined);
+                }, jasmine.objectContaining({parse: true}));
             });
 
-            it('Should call generateId()', function () {
-                expect(Picture.prototype.generateId).toHaveBeenCalled();
+            it('Should call parse()', function () {
+                expect(Picture.prototype.parse).toHaveBeenCalledWith({
+                    pid: '1',
+                    icon: 'http://myicon.jpg',
+                    picture: 'http://myoriginal.jpg',
+                    location: {
+                        latitude: '40.713509',
+                        longitude: '-73.941141',
+                    }
+                }, jasmine.any(Object));
+            });
+
+            it('Should call set()', function () {
+                expect(Picture.prototype.set).toHaveBeenCalledWith({
+                    id: '1',
+                    pid: '1',
+                    icon: 'http://myicon.jpg',
+                    picture: 'http://myoriginal.jpg',
+                    location: {
+                        latitude: '40.713509',
+                        longitude: '-73.941141',
+                    }
+                }, jasmine.any(Object));
             });
         });
 
@@ -128,201 +160,103 @@ describe('Picture model', function () {
         });
     });
 
-    describe('.get()', function () {
-        describe('With maximum data', function () {
-            beforeEach(function () {
-                this.picture = new Picture({
-                    pid: '1',
-                    provider: new FacebookProvider(),
-                    album: 'My first album',
-                    icon: 'http://myicon.jpg',
-                    picture: 'http://myoriginal.jpg',
-                    location: {
-                        latitude: '40.713509',
-                        longitude: '-73.941141',
-                        label: 'Home',
-                        city: 'Brooklyn',
-                        country: 'USA'
-                    },
-                    label: 'Home sweet home',
-                    link: 'http://mylink.com',
-                    date: '1436143423'
-                });
-            });
+    describe('.set()', function() {
+        beforeEach(function () {
+            spyOn(Picture.__super__, 'set').and.callThrough();
+            spyOn(Picture.prototype, 'validate');
 
-            it('"pid". Should return the picture ID', function () {
-                expect(this.picture.get('pid')).toEqual('1');
-            });
-
-            it('"id". Should return the ID: the concatenation between the pid and the prefix of the provider', function () {
-                expect(this.picture.get('id')).toEqual(this.picture.get('provider').get('prefix') + '1');
-            });
-
-            it('"provider". Should return an instance of Provider', function () {
-                expect(this.picture.get('provider')).toEqual(jasmine.any(Provider));
-            });
-
-            it('"album". Should return the album name', function () {
-                expect(this.picture.get('album')).toEqual('My first album');
-            });
-
-            it('"icon". Should return the icon URL', function () {
-                expect(this.picture.get('icon')).toEqual('http://myicon.jpg');
-            });
-
-            it('"picture". Should return the picture URL', function () {
-                expect(this.picture.get('picture')).toEqual('http://myoriginal.jpg');
-            });
-
-            it('"label". Should return the label', function () {
-                expect(this.picture.get('label')).toEqual('Home sweet home');
-            });
-
-            it('"link". Should return the link', function () {
-                expect(this.picture.get('link')).toEqual('http://mylink.com');
-            });
-
-            it('"date". Should return the date', function () {
-                expect(this.picture.get('date')).toEqual('1436143423');
-            });
-
-            describe('"location"', function () {
-                beforeEach(function () {
-                    this.location = this.picture.get('location');
-                });
-
-                it('.latitude. Should return the latitude', function () {
-                    expect(this.location.latitude).toEqual('40.713509');
-                });
-
-                it('.longitude. Should return the longitude', function () {
-                    expect(this.location.longitude).toEqual('-73.941141');
-                });
-
-                it('.label. Should return the label', function () {
-                    expect(this.location.label).toEqual('Home');
-                });
-
-                it('.city. Should return the city', function () {
-                    expect(this.location.city).toEqual('Brooklyn');
-                });
-
-                it('.country. Should return the country', function () {
-                    expect(this.location.country).toEqual('USA');
-                });
+            this.picture = new Picture({
+                pid: '1',
+                icon: 'http://myicon.jpg',
+                picture: 'http://myoriginal.jpg',
+                location: {
+                    latitude: '40.713509',
+                    longitude: '-73.941141',
+                }
             });
         });
 
-        describe('With minimum data', function () {
-            beforeEach(function () {
-                this.picture = new Picture({
-                    pid: '1',
-                    icon: 'http://myicon.jpg',
-                    picture: 'http://myoriginal.jpg',
-                    location: {
-                        latitude: '40.713509',
-                        longitude: '-73.941141',
-                    }
-                });
+        it('Should call the parent .set() with the validate option', function () {
+            expect(Picture.__super__.set).toHaveBeenCalledWith(jasmine.objectContaining({
+                pid: '1',
+                icon: 'http://myicon.jpg',
+                picture: 'http://myoriginal.jpg',
+                location: {
+                    latitude: '40.713509',
+                    longitude: '-73.941141',
+                }
+            }), jasmine.objectContaining({validate: true}));
+        });
+
+        it('Should call validate()', function () {
+            expect(Picture.prototype.validate).toHaveBeenCalledWith(jasmine.objectContaining({
+                id: '1',
+                pid: '1',
+                icon: 'http://myicon.jpg',
+                picture: 'http://myoriginal.jpg',
+                location: {
+                    latitude: '40.713509',
+                    longitude: '-73.941141',
+                }
+            }), jasmine.any(Object));
+        });
+    });
+
+    describe('.parse()', function () {
+
+        it('Should generate an ID with the provider prefix (provider is in data)', function() {
+            var provider = new FacebookProvider();
+            var pictureData = {
+                pid: '1',
+                provider: provider,
+                icon: 'http://myicon.jpg',
+                picture: 'http://myoriginal.jpg',
+                location: {
+                    latitude: '40.713509',
+                    longitude: '-73.941141',
+                }
+            };
+            var picture = new Picture(pictureData);
+
+            expect(picture.parse(pictureData)).toEqual({
+                id: provider.get('prefix') + '1',
+                pid: '1',
+                provider: provider,
+                icon: 'http://myicon.jpg',
+                picture: 'http://myoriginal.jpg',
+                location: {
+                    latitude: '40.713509',
+                    longitude: '-73.941141',
+                }
             });
+        });
 
-            it('"pid". Should be undefined', function () {
-                expect(this.picture.get('pid')).toEqual('1');
-            });
+        it('Should generate an ID which is equals to the picture ID (provider is not in data)', function() {
+            var pictureData = {
+                pid: '1',
+                icon: 'http://myicon.jpg',
+                picture: 'http://myoriginal.jpg',
+                location: {
+                    latitude: '40.713509',
+                    longitude: '-73.941141',
+                }
+            };
+            var picture = new Picture(pictureData);
 
-            it('"id". Should return the ID: just the picture ID (we don\'t have provider)', function () {
-                expect(this.picture.get('id')).toEqual('1');
-            });
-
-            it('"provider". Should be undefined', function () {
-                expect(this.picture.get('provider')).toBeUndefined();
-            });
-
-            it('"album". Should be undefined', function () {
-                expect(this.picture.get('album')).toBeUndefined();
-            });
-
-            it('"icon". Should return the icon URL', function () {
-                expect(this.picture.get('icon')).toEqual('http://myicon.jpg');
-            });
-
-            it('"picture". Should return the picture URL', function () {
-                expect(this.picture.get('picture')).toEqual('http://myoriginal.jpg');
-            });
-
-            it('"label". Should be undefined', function () {
-                expect(this.picture.get('label')).toBeUndefined();
-            });
-
-            it('"link". Should return the link', function () {
-                expect(this.picture.get('link')).toBeUndefined();
-            });
-
-            it('"date". Should return the date', function () {
-                expect(this.picture.get('date')).toBeUndefined();
-            });
-
-            describe('"location"', function () {
-                beforeEach(function () {
-                    this.location = this.picture.get('location');
-                });
-
-                it('.latitude. Should return the latitude', function () {
-                    expect(this.location.latitude).toEqual('40.713509');
-                });
-
-                it('.longitude. Should return the longitude', function () {
-                    expect(this.location.longitude).toEqual('-73.941141');
-                });
-
-                it('.label. Should be undefined', function () {
-                    expect(this.location.label).toBeUndefined();
-                });
-
-                it('.city. Should be undefined', function () {
-                    expect(this.location.city).toBeUndefined();
-                });
-
-                it('.country. Should be undefined', function () {
-                    expect(this.location.country).toBeUndefined();
-                });
+            expect(picture.parse(pictureData)).toEqual({
+                id: '1',
+                pid: '1',
+                icon: 'http://myicon.jpg',
+                picture: 'http://myoriginal.jpg',
+                location: {
+                    latitude: '40.713509',
+                    longitude: '-73.941141',
+                }
             });
         });
     });
 
-    describe('.generateId()', function () {
+    describe('.validate()', function() {
 
-        it('Should generate an ID with the provider prefix (provider is in data)', function() {
-            var picture = new Picture({
-                pid: '1',
-                provider: new FacebookProvider(),
-                icon: 'http://myicon.jpg',
-                picture: 'http://myoriginal.jpg',
-                location: {
-                    latitude: '40.713509',
-                    longitude: '-73.941141',
-                }
-            });
-            spyOn(picture, 'set');
-            picture.generateId();
-
-            expect(picture.set).toHaveBeenCalledWith('id', picture.get('provider').get('prefix') + '1');
-        });
-
-        it('Should generate an ID which is equals to the picture ID (provider is not in data)', function() {
-            var picture = new Picture({
-                pid: '1',
-                icon: 'http://myicon.jpg',
-                picture: 'http://myoriginal.jpg',
-                location: {
-                    latitude: '40.713509',
-                    longitude: '-73.941141',
-                }
-            });
-            spyOn(picture, 'set');
-            picture.generateId();
-
-            expect(picture.set).toHaveBeenCalledWith('id', '1');
-        });
     });
 });
