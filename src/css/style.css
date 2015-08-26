@@ -1,0 +1,18 @@
+* {
+  box-sizing: border-box; }
+
+/**
+ * Map section
+ */
+#map {
+  float: left;
+  width: 75%;
+  height: 100vh; }
+
+/**
+ * Classes
+ */
+.clearfix {
+  clear: both; }
+
+/*# sourceMappingURL=style.css.map */
