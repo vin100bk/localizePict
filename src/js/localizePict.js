@@ -7,7 +7,7 @@ var LocalizePict = Backbone.View.extend({
 
     /** Events */
     events: {
-        'click a#addPictFb': 'addFbPictures',
+        'click a#add-pict-fb': 'addFbPictures',
     },
 
     /**

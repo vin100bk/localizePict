@@ -3,20 +3,20 @@
     <head>
         <meta charset="utf-8">
         <title>Localize My Pict</title>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="bower_components/normalize.css/normalize.css"/>
         <link rel="stylesheet" href="src/css/style.css"/>
     </head>
 
     <body>
-        <section id="map"></section>
-        <section id="sidebar">
-            <section id="sidebar-pictures"></section>
-
-            <section id="sidebar-addButtons">
-                <ul>
-                    <li><a href="#" id="addPictFb">+ Fb</a></li>
+        <section id="global">
+            <section id="map"></section>
+            <nav id="actions">
+                <ul id="add-pict" class="nostyle">
+                    <li><a href="#" id="add-pict-fb"><i class="fa fa-facebook-official"></i> Add from Facebook</a></li>
                 </ul>
-            </section>
+            </nav>
         </section>
 
         <div id="fb-root"></div>
