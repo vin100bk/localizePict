@@ -49,30 +49,30 @@ var Picture = Backbone.Model.extend({
          * Check mandatory fields
          */
         if (!_.has(attributes, 'pid')) {
-            throw {
+            return {
                 name: 'PictureException',
                 message: 'A picture has to have a pid'
             }
         }
         if (!_.has(attributes, 'icon')) {
-            throw {
+            return {
                 name: 'PictureException',
                 message: 'A picture has to have an icon'
             }
         }
         if (!_.has(attributes, 'picture')) {
-            throw {
+            return {
                 name: 'PictureException',
                 message: 'A picture has to have a picture field'
             }
         }
         if (!_.has(attributes, 'location')) {
-            throw {
+            return {
                 name: 'PictureException',
                 message: 'A picture has to have a location'
             }
         } else if (!_.isObject(attributes.location) || !_.has(attributes.location, 'latitude') || !_.has(attributes.location, 'longitude')) {
-            throw {
+            return {
                 name: 'PictureException',
                 message: 'The location is not valid'
             }
