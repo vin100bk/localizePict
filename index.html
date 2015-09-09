@@ -6,6 +6,7 @@
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="bower_components/normalize.css/normalize.css"/>
+        <link rel="stylesheet" href="src/css/reset.css"/>
         <link rel="stylesheet" href="src/css/style.css"/>
     </head>
 
@@ -14,7 +15,7 @@
             <section id="map"></section>
             <nav id="actions">
                 <ul id="add-pict" class="nostyle">
-                    <li><a href="#" id="add-pict-fb"><i class="fa fa-facebook-official"></i> Add from Facebook</a></li>
+                    <li><a href="#" id="add-pict-fb" class="provider"><i class="fa fa-facebook-official"></i> Add from Facebook</a></li>
                 </ul>
             </nav>
         </section>
@@ -29,6 +30,10 @@
         <script src="src/js/models/Picture.js"></script>
         <script src="src/js/models/Pictures.js"></script>
         <script src="src/js/localizePict.js"></script>
+
+        <script id="tplProviderOpts" type="text/template">
+            <p class="providerOpts"><a href="#refresh-picts">Refresh</a> | <a href="hide-picts">Hide Picts</a></p>
+        </script>
 
         <script>
             <!--

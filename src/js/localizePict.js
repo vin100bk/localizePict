@@ -3,7 +3,7 @@
  */
 var LocalizePict = Backbone.View.extend({
     /** Root element */
-    el: $('body'),
+    el: $('#global'),
 
     /** Events */
     events: {
@@ -16,7 +16,6 @@ var LocalizePict = Backbone.View.extend({
     initialize: function () {
         this.model = new Pictures();
         this.model.on('set', this.update, this);
-        this.initMap();
         this.render();
     },
 
@@ -39,6 +38,7 @@ var LocalizePict = Backbone.View.extend({
      * Initial render
      */
     render: function () {
+        this.initMap();
         return this;
     },
 
@@ -47,7 +47,6 @@ var LocalizePict = Backbone.View.extend({
      */
     update: function() {
         this.populateMap();
-        this.renderSideBar();
     },
 
     /**
@@ -70,31 +69,30 @@ var LocalizePict = Backbone.View.extend({
             google.maps.event.addListener(marker, 'click', function () {
                 console.log('click');
             });
-
-            // On mouseover
-            google.maps.event.addListener(marker, 'mouseover', function () {
-                console.log(picture);
-                pictInfos = new google.maps.InfoWindow({
-                    content: '<div><img src="' + picture.icon + '" alt="" /></div>'
-                });
-                pictInfos.open(this.map, marker);
-            });
-
-            // On mouseout
-            google.maps.event.addListener(marker, 'mouseout', function (event) {
-                pictInfos.close();
-            });
         });
     },
 
     /**
-     * Render the sidebar
+     * Show provider options
+     * @param element: the element clicked
      */
-    renderSideBar: function () {
-        var self = this;
-        this.model.each(function (picture) {
+    showOptionsProvider: function(element) {
+        var after = element.next();
+        if(after.hasClass('providerOpts')) {
+            // Options already inserted
+            after.toggle();
+        } else {
+            element.after(this.template('tplProviderOpts'));
+        }
+    },
 
-        });
+    /**
+     * Render a template from its HTML ID
+     * @param id: HTML ID
+     * @returns the template string
+     */
+    template: function(id) {
+        return $('#' + id).html();
     },
 
     /**
@@ -103,6 +101,16 @@ var LocalizePict = Backbone.View.extend({
     addFbPictures: function (e) {
         e.preventDefault();
         // @todo: Handle errors
-        this.model.addFromFb();
+
+        // Clicked element
+        var element = $(e.currentTarget);
+
+        if(element.hasClass('active')) {
+            // Pictures already added
+            this.showOptionsProvider(element);
+        } else {
+            this.model.addFromFb();
+            element.addClass('active');
+        }
     },
 });
