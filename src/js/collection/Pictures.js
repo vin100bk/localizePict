@@ -1,9 +1,9 @@
 /**
  * Represent a collection of pictures
  */
-var Pictures = Backbone.Collection.extend({
+LocalizePict.Collection.Pictures = Backbone.Collection.extend({
     /** Associated model */
-    model: Picture,
+    model: LocalizePict.Model.Picture,
 
     /**
      * @Override
@@ -11,7 +11,7 @@ var Pictures = Backbone.Collection.extend({
      */
     set: function () {
         // @todo: handle duplicates on multiples providers
-        Pictures.__super__.set.apply(this, arguments);
+        LocalizePict.Collection.Pictures.__super__.set.apply(this, arguments);
         this.trigger('set');
     },
 
@@ -70,9 +70,9 @@ var Pictures = Backbone.Collection.extend({
                                         /**
                                          * Mandatory fields: icon, pictures and location
                                          */
-                                        var picture = new Picture({
+                                        var picture = new LocalizePict.Model.Picture({
                                             pid: element.id,
-                                            provider: new FacebookProvider(),
+                                            provider: new LocalizePict.Model.FacebookProvider(),
                                             album: element.album,
                                             icon: element.picture,
                                             picture: element.source,

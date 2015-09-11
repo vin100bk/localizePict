@@ -4,8 +4,8 @@
 describe('Pictures', function () {
 
     beforeEach(function () {
-        spyOn(LocalizePict.prototype, 'update').and.callThrough();
-        this.app = new LocalizePict();
+        spyOn(LocalizePict.View.App.prototype, 'update').and.callThrough();
+        this.app = new LocalizePict.View.App();
         this.pictures = this.app.model;
     });
 
@@ -17,7 +17,7 @@ describe('Pictures', function () {
 
         beforeEach(function () {
             this.picturesData = [
-                new Picture({
+                new LocalizePict.Model.Picture({
                     pid: '1',
                     icon: 'http://myicon1.jpg',
                     picture: 'http://myoriginal1.jpg',
@@ -26,7 +26,7 @@ describe('Pictures', function () {
                         longitude: '-73.941141',
                     }
                 }),
-                new Picture({
+                new LocalizePict.Model.Picture({
                     pid: '2',
                     icon: 'http://myicon2.jpg',
                     picture: 'http://myoriginal2.jpg',
@@ -169,7 +169,7 @@ describe('Pictures', function () {
                         // Get the array built from json data
                         var array = this.pictures.set.calls.argsFor(0)[0];
                         expect(array.length).toEqual(4);
-                        expect(array[0]).toEqual(jasmine.any(Picture));
+                        expect(array[0]).toEqual(jasmine.any(LocalizePict.Model.Picture));
                     });
 
                     it('Should notify the success', function() {
@@ -177,22 +177,22 @@ describe('Pictures', function () {
                     });
 
                     it('Should notify the view about the change', function() {
-                        expect(LocalizePict.prototype.update).toHaveBeenCalled();
+                        expect(LocalizePict.View.App.prototype.update).toHaveBeenCalled();
                     });
 
                     it('Should assign an array of Picture', function () {
                         var picturesArray = this.pictures.models;
                         expect(picturesArray.length).toEqual(4);
-                        expect(picturesArray[0]).toEqual(jasmine.any(Picture));
+                        expect(picturesArray[0]).toEqual(jasmine.any(LocalizePict.Model.Picture));
                     });
 
                     it('Should retrieve the correct picture', function () {
-                        var prefix = new FacebookProvider().get('prefix');
+                        var prefix = new LocalizePict.Model.FacebookProvider().get('prefix');
                         expect(this.pictures.get(prefix + '5').get('label')).toEqual('My fake picture number 5');
                     });
 
                     it('Should not retrieve a picture without localized information', function() {
-                        var prefix = new FacebookProvider().get('prefix');
+                        var prefix = new LocalizePict.Model.FacebookProvider().get('prefix');
                         expect(this.pictures.get(prefix + '1')).toBeUndefined();
                     });
                 });
@@ -212,7 +212,7 @@ describe('Pictures', function () {
                     });
 
                     it('Should not notify the view about the change', function() {
-                        expect(LocalizePict.prototype.update).not.toHaveBeenCalled();
+                        expect(LocalizePict.View.App.prototype.update).not.toHaveBeenCalled();
                     });
                 });
             });
@@ -235,7 +235,7 @@ describe('Pictures', function () {
 
                 it('Should not notify the view about a change', function() {
                     expect(this.apiCallback.bind(null, '')).toThrow();
-                    expect(LocalizePict.prototype.update).not.toHaveBeenCalled();
+                    expect(LocalizePict.View.App.prototype.update).not.toHaveBeenCalled();
                 });
             });
         });

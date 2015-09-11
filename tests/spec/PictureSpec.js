@@ -8,7 +8,7 @@ describe('Picture model', function () {
         describe('With correct data', function () {
 
             beforeEach(function () {
-                spyOn(Picture.prototype, 'parse').and.returnValue({
+                spyOn(LocalizePict.Model.Picture.prototype, 'parse').and.returnValue({
                     id: '1',
                     pid: '1',
                     icon: 'http://myicon.jpg',
@@ -18,9 +18,9 @@ describe('Picture model', function () {
                         longitude: '-73.941141',
                     }
                 });
-                spyOn(Picture.prototype, 'validate');
+                spyOn(LocalizePict.Model.Picture.prototype, 'validate');
 
-                this.picture = new Picture({
+                this.picture = new LocalizePict.Model.Picture({
                     pid: '1',
                     icon: 'http://myicon.jpg',
                     picture: 'http://myoriginal.jpg',
@@ -32,7 +32,7 @@ describe('Picture model', function () {
             });
 
             it('Should call parse()', function () {
-                expect(Picture.prototype.parse).toHaveBeenCalledWith({
+                expect(LocalizePict.Model.Picture.prototype.parse).toHaveBeenCalledWith({
                     pid: '1',
                     icon: 'http://myicon.jpg',
                     picture: 'http://myoriginal.jpg',
@@ -44,14 +44,14 @@ describe('Picture model', function () {
             });
 
             it('Should call validate()', function () {
-                expect(Picture.prototype.validate).toHaveBeenCalled();
+                expect(LocalizePict.Model.Picture.prototype.validate).toHaveBeenCalled();
             });
         });
 
         describe('With incorrect data', function () {
 
             it('Should trigger an error', function () {
-                var pict = new Picture({
+                var pict = new LocalizePict.Model.Picture({
                     icon: 'http://myicon.jpg',
                     picture: 'http://myoriginal.jpg',
                     location: {
@@ -74,9 +74,9 @@ describe('Picture model', function () {
 
     describe('.set()', function() {
         beforeEach(function () {
-            spyOn(Picture.prototype, 'validate');
+            spyOn(LocalizePict.Model.Picture.prototype, 'validate');
 
-            this.picture = new Picture({
+            this.picture = new LocalizePict.Model.Picture({
                 pid: '1',
                 icon: 'http://myicon.jpg',
                 picture: 'http://myoriginal.jpg',
@@ -88,7 +88,7 @@ describe('Picture model', function () {
         });
 
         it('Should call validate()', function () {
-            expect(Picture.prototype.validate).toHaveBeenCalledWith(jasmine.objectContaining({
+            expect(LocalizePict.Model.Picture.prototype.validate).toHaveBeenCalledWith(jasmine.objectContaining({
                 id: '1',
                 pid: '1',
                 icon: 'http://myicon.jpg',
@@ -103,8 +103,8 @@ describe('Picture model', function () {
 
     describe('.parse()', function () {
         it('Should generate an ID with the provider prefix (provider is in data)', function() {
-            var provider = new FacebookProvider();
-            expect(Picture.prototype.parse({
+            var provider = new LocalizePict.Model.FacebookProvider();
+            expect(LocalizePict.Model.Picture.prototype.parse({
                 pid: '1',
                 provider: provider,
                 icon: 'http://myicon.jpg',
@@ -127,7 +127,7 @@ describe('Picture model', function () {
         });
 
         it('Should generate an ID which is equals to the picture ID (provider is not in data)', function() {
-            expect(Picture.prototype.parse({
+            expect(LocalizePict.Model.Picture.prototype.parse({
                 pid: '1',
                 icon: 'http://myicon.jpg',
                 picture: 'http://myoriginal.jpg',
@@ -150,7 +150,7 @@ describe('Picture model', function () {
 
     describe('.validate()', function() {
         it('Should trigger an error without pid', function () {
-            expect(Picture.prototype.validate({
+            expect(LocalizePict.Model.Picture.prototype.validate({
                 icon: 'http://myicon.jpg',
                 picture: 'http://myoriginal.jpg',
                 location: {
@@ -164,7 +164,7 @@ describe('Picture model', function () {
         });
 
         it('Should trigger an error without icon', function () {
-            expect(Picture.prototype.validate({
+            expect(LocalizePict.Model.Picture.prototype.validate({
                 pid: '1',
                 picture: 'http://myoriginal.jpg',
                 location: {
@@ -178,7 +178,7 @@ describe('Picture model', function () {
         });
 
         it('Should trigger an error without picture', function () {
-            expect(Picture.prototype.validate({
+            expect(LocalizePict.Model.Picture.prototype.validate({
                 pid: '1',
                 icon: 'http://myicon.jpg',
                 location: {
@@ -192,7 +192,7 @@ describe('Picture model', function () {
         });
 
         it('Should trigger an error without location', function () {
-            expect(Picture.prototype.validate({
+            expect(LocalizePict.Model.Picture.prototype.validate({
                 pid: '1',
                 icon: 'http://myicon.jpg',
                 picture: 'http://myoriginal.jpg'
@@ -203,7 +203,7 @@ describe('Picture model', function () {
         });
 
         it('Should trigger an error with an empty location', function () {
-            expect(Picture.prototype.validate({
+            expect(LocalizePict.Model.Picture.prototype.validate({
                 pid: '1',
                 icon: 'http://myicon.jpg',
                 picture: 'http://myoriginal.jpg',
@@ -215,7 +215,7 @@ describe('Picture model', function () {
         });
 
         it('Should trigger an error with a location without latitude', function () {
-            expect(Picture.prototype.validate({
+            expect(LocalizePict.Model.Picture.prototype.validate({
                 pid: '1',
                 icon: 'http://myicon.jpg',
                 picture: 'http://myoriginal.jpg',
@@ -229,7 +229,7 @@ describe('Picture model', function () {
         });
 
         it('Should trigger an error with a location without longitude', function () {
-            expect(Picture.prototype.validate({
+            expect(LocalizePict.Model.Picture.prototype.validate({
                 pid: '1',
                 icon: 'http://myicon.jpg',
                 picture: 'http://myoriginal.jpg',

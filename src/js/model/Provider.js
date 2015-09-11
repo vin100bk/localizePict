@@ -1,14 +1,14 @@
 /**
  * Represent a provider
  */
-var Provider = Backbone.Model.extend({
+LocalizePict.Model.Provider = Backbone.Model.extend({
 
 });
 
 /**
  * Facebook
  */
-var FacebookProvider = Provider.extend({
+LocalizePict.Model.FacebookProvider = LocalizePict.Model.Provider.extend({
     /**
      * Facebook values
      */

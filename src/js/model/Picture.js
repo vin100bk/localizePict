@@ -1,7 +1,7 @@
 /**
  * Represent a picture
  */
-var Picture = Backbone.Model.extend({
+LocalizePict.Model.Picture = Backbone.Model.extend({
     /**
      * Identifier attribute
      */
@@ -13,7 +13,7 @@ var Picture = Backbone.Model.extend({
      * @param options
      */
     constructor: function (attributes, options) {
-        Picture.__super__.constructor.apply(this, [attributes, $.extend(options, {parse: true})]);
+        LocalizePict.Model.Picture.__super__.constructor.apply(this, [attributes, $.extend(options, {parse: true})]);
     },
 
     /**
@@ -22,7 +22,7 @@ var Picture = Backbone.Model.extend({
      * @param options
      */
     set: function(attributes, options) {
-        Picture.__super__.set.apply(this, [attributes, $.extend(options, {validate: true})]);
+        LocalizePict.Model.Picture.__super__.set.apply(this, [attributes, $.extend(options, {validate: true})]);
     },
 
     /**
