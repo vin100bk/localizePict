@@ -33,7 +33,11 @@ LocalizePict.View.Notices = LocalizePict.View.Abstract.extend({
     /**
      * Close notices
      */
-    closeNotices: function () {
+    closeNotices: function (e) {
+        if(e) {
+            e.preventDefault();
+        }
+
         var el = $(this.el);
         el.addClass('hidden');
         el.children('p').remove();
