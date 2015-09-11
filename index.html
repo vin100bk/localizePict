@@ -13,6 +13,9 @@
     <body>
         <section id="global">
             <section id="map"></section>
+
+            <section id="notices" class="hidden"></section>
+
             <nav id="actions">
                 <ul id="add-pict" class="nostyle">
                     <li><a href="#" id="add-pict-fb" class="provider"><i class="fa fa-facebook-official"></i> Add from Facebook</a></li>
@@ -21,6 +24,7 @@
         </section>
 
         <div id="fb-root"></div>
+
         <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
         <script src="//maps.googleapis.com/maps/api/js?key=AIzaSyDRdFfPvoXq61BUKdBT8yeJQEPsf9B6xDI"></script>
         <script src="bower_components/underscore/underscore-min.js"></script>
@@ -32,7 +36,7 @@
         <script src="src/js/localizePict.js"></script>
 
         <script id="tplProviderOpts" type="text/template">
-            <p class="providerOpts"><a href="#refresh-picts">Refresh</a> | <a href="hide-picts">Hide Picts</a></p>
+            <p class="providerOpts"><a href="#refresh-picts">Refresh</a> | <a href="remove-picts">Remove</a></p>
         </script>
 
         <script>

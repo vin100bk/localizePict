@@ -8,6 +8,7 @@ var LocalizePict = Backbone.View.extend({
     /** Events */
     events: {
         'click a#add-pict-fb': 'addFbPictures',
+        'click a#notices-close': 'closeNotices'
     },
 
     /**
@@ -29,7 +30,7 @@ var LocalizePict = Backbone.View.extend({
         };
 
         var map = document.getElementById('map');
-        if(map) {
+        if (map) {
             this.map = new google.maps.Map(map, mapOptions);
         }
     },
@@ -45,7 +46,7 @@ var LocalizePict = Backbone.View.extend({
     /**
      * Update the application
      */
-    update: function() {
+    update: function () {
         this.populateMap();
     },
 
@@ -76,9 +77,9 @@ var LocalizePict = Backbone.View.extend({
      * Show provider options
      * @param element: the element clicked
      */
-    showOptionsProvider: function(element) {
+    showOptionsProvider: function (element) {
         var after = element.next();
-        if(after.hasClass('providerOpts')) {
+        if (after.hasClass('providerOpts')) {
             // Options already inserted
             after.toggle();
         } else {
@@ -91,8 +92,37 @@ var LocalizePict = Backbone.View.extend({
      * @param id: HTML ID
      * @returns the template string
      */
-    template: function(id) {
+    template: function (id) {
         return $('#' + id).html();
+    },
+
+    /**
+     * Add a notice
+     * @param text: notice text
+     */
+    addNotice: function(text) {
+        var notices = $('#notices');
+        if(notices.hasClass('hidden')) {
+            notices.removeClass('hidden');
+        }
+
+        notices.append('<p>' + text + '</p>');
+    },
+
+    /**
+     * Add a close button for notices
+     */
+    addCloseButtonToNotices: function() {
+        $('#notices').append('<p class="center"><a href="#" id="notices-close">Ok</a></p>');
+    },
+
+    /**
+     * Close notices
+     */
+    closeNotices: function() {
+        var notices = $('#notices');
+        notices.addClass('hidden');
+        notices.children('p').remove();
     },
 
     /**
@@ -105,12 +135,35 @@ var LocalizePict = Backbone.View.extend({
         // Clicked element
         var element = $(e.currentTarget);
 
-        if(element.hasClass('active')) {
+        if (element.hasClass('active')) {
             // Pictures already added
             this.showOptionsProvider(element);
         } else {
-            this.model.addFromFb();
-            element.addClass('active');
+            var self = this;
+            this.model.addFromFb()
+                .progress(function (key, data) {
+                    switch (key) {
+                        case 'connect':
+                            self.addNotice('Connecting to Facebook ...');
+                            break;
+
+                        case 'fetch':
+                            self.addNotice('Fetching pictures ...');
+                            break;
+
+                        case 'nbTotalPicts':
+                            self.addNotice('<strong>' + data + '</strong> picture(s) found');
+                            break;
+                    }
+                })
+                .done(function (data) {
+                    self.addNotice('<strong>' + data + '</strong> geo-tagged picture(s) added');
+                    self.addCloseButtonToNotices();
+                    element.addClass('active');
+                })
+                .fail(function () {
+
+                });
         }
     },
 });

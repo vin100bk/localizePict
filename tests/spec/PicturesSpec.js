@@ -13,39 +13,6 @@ describe('Pictures', function () {
         expect(this.pictures.length).toEqual(0);
     });
 
-    describe('.get()', function () {
-
-        beforeEach(function () {
-            this.pictures = new Pictures([
-                new Picture({
-                    pid: '1',
-                    icon: 'http://myicon1.jpg',
-                    picture: 'http://myoriginal1.jpg',
-                    location: {
-                        latitude: '40.713509',
-                        longitude: '-73.941141',
-                    }
-                }),
-                new Picture({
-                    pid: '2',
-                    icon: 'http://myicon2.jpg',
-                    picture: 'http://myoriginal2.jpg',
-                    location: {
-                        latitude: '40.713509',
-                        longitude: '-73.941141',
-                    }
-                })]);
-        });
-
-        it('Should retrieve the correct picture', function() {
-            expect(this.pictures.get('1').get('icon')).toEqual('http://myicon1.jpg');
-        });
-
-        it('Should return undefined if there is no picture with a specified ID', function() {
-            expect(this.pictures.get('3')).toBeUndefined();
-        });
-    });
-
     describe('.set()', function() {
 
         beforeEach(function () {
@@ -87,14 +54,18 @@ describe('Pictures', function () {
 
         beforeAll(function () {
             // Load data examples
-            this.data = loadJSONFixtures('fbPicturesExample.json', 'fbPicturesNoPictures.json', 'fbPicturesNoData.json');
+            this.data = loadJSONFixtures('fbPicturesExample.json', 'fbPicturesNoPictures.json');
         });
 
         beforeEach(function () {
+            var promise = jasmine.createSpyObj('promise', ['done']);
+            this.deferred = jasmine.createSpyObj('deferred', ['notify', 'resolve', 'reject', 'promise']);
             // Create a psy for the SDK loading
-            spyOn($, 'getScript');
+            spyOn($, 'getScript').and.returnValue(promise);
             // Create a spy for set()
             spyOn(this.pictures, 'set').and.callThrough();
+            // Create a spy for the Deferred
+            spyOn($, 'Deferred').and.returnValue(this.deferred);
             // Execute the function
             this.pictures.addFromFb();
             // Create a mock for the FB object
@@ -106,11 +77,28 @@ describe('Pictures', function () {
             ]);
 
             // Process the callback of getScript
-            var getScriptCallback = $.getScript.calls.argsFor(0)[1];
+            var getScriptCallback = promise.done.calls.argsFor(0)[0];
             getScriptCallback();
         });
 
-        describe('When no connected', function () {
+        it('Should notify the connect initialization', function() {
+            expect(this.deferred.notify).toHaveBeenCalledWith('connect');
+        });
+
+        it('Should call the Facebook SDK once', function () {
+            expect($.getScript).toHaveBeenCalledWith('//connect.facebook.net/en_US/sdk.js');
+            expect($.getScript.calls.count()).toEqual(1);
+        });
+
+        it('Should call FB.init()', function () {
+            // Init
+            expect(FB.init).toHaveBeenCalledWith({
+                appId: jasmine.any(String),
+                version: jasmine.any(String)
+            });
+        });
+
+        describe('When not connected', function () {
 
             it('Should call FB.login()', function () {
                 // Create a mock response object
@@ -124,7 +112,7 @@ describe('Pictures', function () {
                 expect(FB.login).toHaveBeenCalledWith({scope: 'user_photos'});
             });
 
-            it('Should throw an error with a non conforme response', function () {
+            it('Should throw an error with a no compliant response', function () {
                 // Create a mock response object
                 var response = jasmine.createSpy('response');
 
@@ -149,22 +137,14 @@ describe('Pictures', function () {
                 this.apiCallback = FB.api.calls.argsFor(0)[3];
             });
 
-            it('Should call the Facebook SDK once', function () {
-                expect($.getScript).toHaveBeenCalledWith('//connect.facebook.net/en_US/sdk.js', jasmine.any(Function));
-                expect($.getScript.calls.count()).toEqual(1);
-            });
-
-            it('Should call FB.init()', function () {
-                // Init
-                expect(FB.init).toHaveBeenCalledWith({
-                    appId: jasmine.any(String),
-                    version: jasmine.any(String)
-                });
-            });
 
             it('Should call FB.getLoginStatus()', function () {
                 // getLoginStatus
                 expect(FB.getLoginStatus).toHaveBeenCalledWith(jasmine.any(Function));
+            });
+
+            it('Should notify the pictures fetching', function() {
+                expect(this.deferred.notify).toHaveBeenCalledWith('fetch');
             });
 
             it('Should call FB.api()', function () {
@@ -180,12 +160,20 @@ describe('Pictures', function () {
                         this.apiCallback(this.data['fbPicturesExample.json']);
                     });
 
+                    it('Should notify the total number of pictures', function() {
+                        expect(this.deferred.notify).toHaveBeenCalledWith('nbTotalPicts', 8);
+                    });
+
                     it('Should call set()', function () {
                         expect(this.pictures.set).toHaveBeenCalledWith(jasmine.any(Array));
                         // Get the array built from json data
                         var array = this.pictures.set.calls.argsFor(0)[0];
                         expect(array.length).toEqual(4);
                         expect(array[0]).toEqual(jasmine.any(Picture));
+                    });
+
+                    it('Should notify the success', function() {
+                        expect(this.deferred.resolve).toHaveBeenCalledWith(4);
                     });
 
                     it('Should notify the view about the change', function() {
@@ -210,18 +198,20 @@ describe('Pictures', function () {
                 });
 
                 describe('Without localized pictures', function () {
+                    beforeEach(function () {
+                        // Process the callback of FB.api()
+                        this.apiCallback(this.data['fbPicturesNoPictures.json']);
+                    });
+
+                    it('Should notify the total number of pictures', function() {
+                        expect(this.deferred.notify).toHaveBeenCalledWith('nbTotalPicts', 9);
+                    });
+
                     it('Should not call set()', function () {
-                        this.apiCallback(this.data['fbPicturesNoPictures.json']);
                         expect(this.pictures.set).not.toHaveBeenCalled();
                     });
 
-                    it('Should not call set() without pictures at all', function () {
-                        this.apiCallback(this.data['fbPicturesNoData.json']);
-                        expect(this.pictures.set).not.toHaveBeenCalled();
-                    });
-
-                    it('Should notify the view about the change', function() {
-                        this.apiCallback(this.data['fbPicturesNoPictures.json']);
+                    it('Should not notify the view about the change', function() {
                         expect(LocalizePict.prototype.update).not.toHaveBeenCalled();
                     });
                 });
@@ -238,7 +228,13 @@ describe('Pictures', function () {
                     expect(this.pictures.set).not.toHaveBeenCalled();
                 });
 
+                it('Should not notify the total number of pictures', function() {
+                    expect(this.apiCallback.bind(null, '')).toThrow();
+                    expect(this.deferred.notify).not.toHaveBeenCalledWith('nbTotalPicts', jasmine.any());
+                });
+
                 it('Should not notify the view about a change', function() {
+                    expect(this.apiCallback.bind(null, '')).toThrow();
                     expect(LocalizePict.prototype.update).not.toHaveBeenCalled();
                 });
             });

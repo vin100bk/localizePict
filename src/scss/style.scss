@@ -1,3 +1,5 @@
+$sidesBg: rgba(255, 255, 255, 0.7);
+
 /**
  * Global
  */
@@ -15,6 +17,19 @@
 }
 
 /**
+ * Notices section
+ */
+#notices {
+	position: fixed;
+	right: 0;
+	bottom: 100px;
+	width: 200px;
+	background-color: $sidesBg;
+	padding: 5px 10px;
+	border-bottom: 1px solid #ccc;
+}
+
+/**
  * Actions section
  */
 #actions {
@@ -23,7 +38,7 @@
 	bottom: 0;
 	width: 200px;
 	height: 100px;
-	background-color: rgba(255, 255, 255, 0.7);
+	background-color: $sidesBg;
 
 	#add-pict {
 		// Provider buttons
@@ -64,8 +79,15 @@
 /**
  * Classes
  */
+.center {
+	text-align:center;
+}
 .clearfix {
 	clear: both;
+}
+
+.hidden {
+	display: none;
 }
 
 ul.nostyle {
