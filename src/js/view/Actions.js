@@ -50,24 +50,12 @@ LocalizePict.View.Actions = LocalizePict.View.Abstract.extend({
 
             var self = this;
             this.model.addFromFb()
-                .progress(function (key, data) {
-                    switch (key) {
-                        case 'connect':
-                            noticesView.addNotice('Connecting to Facebook ...');
-                            break;
-
-                        case 'fetch':
-                            noticesView.addNotice('Fetching pictures ...');
-                            break;
-
-                        case 'nbTotalPicts':
-                            noticesView.addNotice('<strong>' + data + '</strong> picture(s) found');
-                            break;
-                    }
+                .progress(function (message) {
+                    noticesView.addNotice(message);
                 })
-                .done(function (data) {
+                .done(function (message) {
                     noticesView.removeOverlay();
-                    noticesView.addNotice('<strong>' + data + '</strong> geo-tagged picture(s) added');
+                    noticesView.addNotice(message);
                     noticesView.addCloseButtonToNotices();
                     element.addClass('active');
                 })

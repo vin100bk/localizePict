@@ -41,7 +41,8 @@
 	width: $actionsWidth;
 	height: 100px;
 	background-color: $sidesBg;
-	border: 1px solid $sidesBorderColor;
+	border-top: 1px solid $sidesBorderColor;
+	border-left: 1px solid $sidesBorderColor;
 
 	#add-pict {
 		// Provider buttons
@@ -95,5 +96,7 @@
 		height: $actionsHeight;
 		text-align: center;
 		padding-top: 30px;
+		border-top: 1px solid $sidesBorderColor;
+		border-left: 1px solid $sidesBorderColor;
 	}
 }

@@ -81,10 +81,6 @@ describe('Pictures', function () {
             getScriptCallback();
         });
 
-        it('Should notify the connect initialization', function() {
-            expect(this.deferred.notify).toHaveBeenCalledWith('connect');
-        });
-
         it('Should call the Facebook SDK once', function () {
             expect($.getScript).toHaveBeenCalledWith('//connect.facebook.net/en_US/sdk.js');
             expect($.getScript.calls.count()).toEqual(1);
@@ -143,10 +139,6 @@ describe('Pictures', function () {
                 expect(FB.getLoginStatus).toHaveBeenCalledWith(jasmine.any(Function));
             });
 
-            it('Should notify the pictures fetching', function() {
-                expect(this.deferred.notify).toHaveBeenCalledWith('fetch');
-            });
-
             it('Should call FB.api()', function () {
                 // api
                 expect(FB.api).toHaveBeenCalledWith('/me/photos', 'get', jasmine.any(Object), jasmine.any(Function));
@@ -160,10 +152,6 @@ describe('Pictures', function () {
                         this.apiCallback(this.data['fbPicturesExample.json']);
                     });
 
-                    it('Should notify the total number of pictures', function() {
-                        expect(this.deferred.notify).toHaveBeenCalledWith('nbTotalPicts', 8);
-                    });
-
                     it('Should call set()', function () {
                         expect(this.pictures.set).toHaveBeenCalledWith(jasmine.any(Array));
                         // Get the array built from json data
@@ -173,7 +161,7 @@ describe('Pictures', function () {
                     });
 
                     it('Should notify the success', function() {
-                        expect(this.deferred.resolve).toHaveBeenCalledWith(4);
+                        expect(this.deferred.resolve).toHaveBeenCalled();
                     });
 
                     it('Should notify the view about the change', function() {
@@ -203,10 +191,6 @@ describe('Pictures', function () {
                         this.apiCallback(this.data['fbPicturesNoPictures.json']);
                     });
 
-                    it('Should notify the total number of pictures', function() {
-                        expect(this.deferred.notify).toHaveBeenCalledWith('nbTotalPicts', 9);
-                    });
-
                     it('Should not call set()', function () {
                         expect(this.pictures.set).not.toHaveBeenCalled();
                     });
@@ -226,11 +210,6 @@ describe('Pictures', function () {
                 it('Should throw an error with a corrupted JSON', function () {
                     expect(this.apiCallback.bind(null, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus vitae rutrum est. Pellentesque ut ligula nec justo porta pretium. Aliquam.')).toThrow();
                     expect(this.pictures.set).not.toHaveBeenCalled();
-                });
-
-                it('Should not notify the total number of pictures', function() {
-                    expect(this.apiCallback.bind(null, '')).toThrow();
-                    expect(this.deferred.notify).not.toHaveBeenCalledWith('nbTotalPicts', jasmine.any());
                 });
 
                 it('Should not notify the view about a change', function() {

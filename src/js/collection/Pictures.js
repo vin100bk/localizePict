@@ -23,7 +23,7 @@ LocalizePict.Collection.Pictures = Backbone.Collection.extend({
         // We use a deferred for the process
         var deferred = $.Deferred();
 
-        deferred.notify('connect');
+        deferred.notify('Connecting to Facebook ...');
 
         try {
             $.ajaxSetup({cache: true});
@@ -44,7 +44,7 @@ LocalizePict.Collection.Pictures = Backbone.Collection.extend({
                         }
 
                         if (response.status === 'connected') {
-                            deferred.notify('fetch');
+                            deferred.notify('Fetching pictures ...');
 
                             FB.api('/me/photos', 'get', {
                                 limit: 500,
@@ -60,7 +60,7 @@ LocalizePict.Collection.Pictures = Backbone.Collection.extend({
                                 }
 
                                 // Notice the total number of pictures
-                                deferred.notify('nbTotalPicts', json.data.length);
+                                deferred.notify('<strong>' + json.data.length + '</strong> picture(s) found');
 
                                 // Contains all pictures
                                 var pictures = [];
@@ -90,11 +90,7 @@ LocalizePict.Collection.Pictures = Backbone.Collection.extend({
 
                                         if (picture.isValid()) {
                                             // Picture valid
-                                            deferred.notify('addValid', picture);
                                             pictures.push(picture);
-                                        } else {
-                                            // Picture invalid
-                                            deferred.notify('addInvalid', picture);
                                         }
                                     }
                                 });
@@ -103,7 +99,7 @@ LocalizePict.Collection.Pictures = Backbone.Collection.extend({
                                     // Set new picture in the collection
                                     self.set(pictures);
                                     // Insertion succeed
-                                    deferred.resolve(pictures.length);
+                                    deferred.resolve('<strong>' + pictures.length + '</strong> geo-tagged picture(s) added');
                                 }
                             });
                         } else {
