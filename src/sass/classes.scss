@@ -1,0 +1,24 @@
+.center {
+	text-align: center;
+}
+
+.clearfix {
+	clear: both;
+}
+
+.hidden {
+	display: none;
+}
+
+ul.nostyle {
+	list-style-type: none;
+	margin: 0;
+}
+
+.user-select {
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}

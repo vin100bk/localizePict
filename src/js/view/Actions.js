@@ -45,6 +45,9 @@ LocalizePict.View.Actions = LocalizePict.View.Abstract.extend({
             // Remove possible previous notices
             noticesView.closeNotices();
 
+            // Add an overlay over the notices
+            noticesView.addOverlay();
+
             var self = this;
             this.model.addFromFb()
                 .progress(function (key, data) {
@@ -63,12 +66,13 @@ LocalizePict.View.Actions = LocalizePict.View.Abstract.extend({
                     }
                 })
                 .done(function (data) {
+                    noticesView.removeOverlay();
                     noticesView.addNotice('<strong>' + data + '</strong> geo-tagged picture(s) added');
                     noticesView.addCloseButtonToNotices();
                     element.addClass('active');
                 })
                 .fail(function () {
-
+                    noticesView.removeOverlay();
                 });
         }
     },

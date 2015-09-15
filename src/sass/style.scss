@@ -1,4 +1,5 @@
-$sidesBg: rgba(255, 255, 255, 0.7);
+@import 'variables';
+@import 'classes';
 
 /**
  * Global
@@ -23,7 +24,7 @@ $sidesBg: rgba(255, 255, 255, 0.7);
 	position: fixed;
 	right: 0;
 	bottom: 100px;
-	width: 200px;
+	width: $actionsWidth;
 	background-color: $sidesBg;
 	padding: 5px 10px;
 	border-bottom: 1px solid #ccc;
@@ -36,7 +37,7 @@ $sidesBg: rgba(255, 255, 255, 0.7);
 	position: fixed;
 	right: 0;
 	bottom: 0;
-	width: 200px;
+	width: $actionsWidth;
 	height: 100px;
 	background-color: $sidesBg;
 
@@ -77,20 +78,20 @@ $sidesBg: rgba(255, 255, 255, 0.7);
 }
 
 /**
- * Classes
+ * Overlays
  */
-.center {
-	text-align:center;
-}
-.clearfix {
-	clear: both;
-}
+.overlay {
+	position: fixed;
+	background: rgba(0,0,0,0.5);
+	z-index: 5;
+	@extend .user-select;
 
-.hidden {
-	display: none;
-}
-
-ul.nostyle {
-	list-style-type: none;
-	margin: 0;
+	&.overlay-notices {
+		bottom: 0;
+		right: 0;
+		width:$actionsWidth;
+		height: $actionsHeight;
+		text-align: center;
+		padding-top: 30px;
+	}
 }

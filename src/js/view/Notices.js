@@ -41,5 +41,20 @@ LocalizePict.View.Notices = LocalizePict.View.Abstract.extend({
         var el = $(this.el);
         el.addClass('hidden');
         el.children('p').remove();
+    },
+
+    /**
+     * Add an overlay over the notices
+     */
+    addOverlay: function() {
+        this.removeOverlay();
+        $(this.el).after('<div class="overlay overlay-notices">' + this.template('tplSpinner') + '</div>');
+    },
+
+    /**
+     * Remove the notices overlay
+     */
+    removeOverlay: function() {
+        $('.overlay-notices').remove();
     }
 });
