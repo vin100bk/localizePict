@@ -27,7 +27,8 @@
 	width: $actionsWidth;
 	background-color: $sidesBg;
 	padding: 5px 10px;
-	border-bottom: 1px solid #ccc;
+	border: 1px solid $sidesBorderColor;
+	border-bottom: 0;
 }
 
 /**
@@ -40,6 +41,7 @@
 	width: $actionsWidth;
 	height: 100px;
 	background-color: $sidesBg;
+	border: 1px solid $sidesBorderColor;
 
 	#add-pict {
 		// Provider buttons
