@@ -48,7 +48,6 @@ LocalizePict.View.Actions = LocalizePict.View.Abstract.extend({
             // Add an overlay over the notices
             noticesView.addOverlay();
 
-            var self = this;
             this.model.addFromFb()
                 .progress(function (message) {
                     noticesView.addNotice(message);

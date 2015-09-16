@@ -4,6 +4,8 @@
  */
 LocalizePict = {
     Model: {},
-    Collection: {},
+    Collection: {
+        Provider: {}
+    },
     View: {}
 };
