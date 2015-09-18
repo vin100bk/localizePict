@@ -5,7 +5,7 @@
 LocalizePict = {
     Model: {},
     Collection: {
-        Provider: {}
+        PicturesModule: {}
     },
     View: {}
 };

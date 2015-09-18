@@ -2,7 +2,7 @@
  * Represent a collection of pictures
  */
 LocalizePict.Collection.Pictures = Backbone.Collection.extend(_.extend(
-    LocalizePict.Collection.Provider.Facebook, {
+    LocalizePict.Collection.PicturesModule.Facebook, {
     /** Associated model */
     model: LocalizePict.Model.Picture,
 
