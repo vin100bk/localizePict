@@ -8,9 +8,11 @@ LocalizePict.View.App = LocalizePict.View.Abstract.extend({
     /** The Google Map object */
     map: null,
 
+    /** Map between coordinates and marker */
+    coordinates: {},
+
     /** Events */
-    events: {
-    },
+    events: {},
 
     /**
      * Initialize the application
@@ -65,16 +67,35 @@ LocalizePict.View.App = LocalizePict.View.Abstract.extend({
          */
         var self = this;
         this.model.each(function (picture) {
-            // Create the market with the longitude and latitude of the current picture
-            var marker = new google.maps.Marker({
-                position: new google.maps.LatLng(picture.attributes.location.latitude, picture.attributes.location.longitude),
-                map: self.map,
-            });
+            var coordinatesKey = picture.attributes.location.latitude + '|' + picture.attributes.location.longitude;
 
-            // On click
-            google.maps.event.addListener(marker, 'click', function () {
-                console.log('click');
-            });
+            if (!_.has(self.coordinates, coordinatesKey)) {
+                // New location
+
+                // Create the market with the longitude and latitude of the current picture
+                var marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(picture.attributes.location.latitude, picture.attributes.location.longitude),
+                    map: self.map
+                });
+
+                // On click
+                google.maps.event.addListener(marker, 'click', function () {
+                    console.log('click');
+                });
+
+                //mouseout, mouseover
+
+                self.coordinates[coordinatesKey] = {
+                    marker: marker,
+                    nb: 1
+                };
+            } else {
+                // A marker is already created for this location
+                self.coordinates[coordinatesKey]['nb']++;
+
+                var marker = self.coordinates[coordinatesKey]['marker'];
+                marker.setTitle(self.coordinates[coordinatesKey]['nb'] + ' pictures');
+            }
         });
     }
 });
