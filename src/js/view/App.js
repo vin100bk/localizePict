@@ -27,6 +27,8 @@ LocalizePict.View.App = LocalizePict.View.Abstract.extend({
 
         // Init the actions view
         new LocalizePict.View.Actions({model: this.model});
+
+        _.bindAll(this, 'showPreview');
     },
 
     /**
@@ -67,35 +69,51 @@ LocalizePict.View.App = LocalizePict.View.Abstract.extend({
          */
         var self = this;
         this.model.each(function (picture) {
-            var coordinatesKey = picture.attributes.location.latitude + '|' + picture.attributes.location.longitude;
+            var coordinatesKey = picture.get('location').latitude + '|' + picture.get('location').longitude;
 
             if (!_.has(self.coordinates, coordinatesKey)) {
                 // New location
 
                 // Create the market with the longitude and latitude of the current picture
                 var marker = new google.maps.Marker({
-                    position: new google.maps.LatLng(picture.attributes.location.latitude, picture.attributes.location.longitude),
+                    position: new google.maps.LatLng(picture.get('location').latitude, picture.get('location').longitude),
                     map: self.map
                 });
 
-                // On click
-                google.maps.event.addListener(marker, 'click', function () {
-                    console.log('click');
-                });
-
-                //mouseout, mouseover
+                //google.maps.event.addListener(marker, 'click', self.showPreview.bind(null, picture));
+                google.maps.event.addListener(marker, 'mouseover', self.showPreview.bind(null, picture));
+                google.maps.event.addListener(marker, 'mouseout', self.hidePreview);
 
                 self.coordinates[coordinatesKey] = {
                     marker: marker,
+                    pictures: [picture],
                     nb: 1
                 };
             } else {
                 // A marker is already created for this location
                 self.coordinates[coordinatesKey]['nb']++;
+                self.coordinates[coordinatesKey]['pictures'].push(picture);
 
                 var marker = self.coordinates[coordinatesKey]['marker'];
                 marker.setTitle(self.coordinates[coordinatesKey]['nb'] + ' pictures');
             }
         });
+    },
+
+    /**
+     * Show the picture icon as preview
+     * @param picture
+     */
+    showPreview: function(picture) {
+        var preview = $('#preview');
+        preview.html('<img src="' + picture.get('icon') + '" alt="" />');
+        preview.removeClass('hidden');
+    },
+
+    /**
+     * Hide the preview
+     */
+    hidePreview: function() {
+        $('#preview').addClass('hidden');
     }
 });

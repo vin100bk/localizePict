@@ -23,7 +23,7 @@ LocalizePict.View.Actions = LocalizePict.View.Abstract.extend({
             // Options already inserted
             after.toggle();
         } else {
-            element.after(this.template('tplProviderOpts'));
+            element.after(this.template('tplProviderOpts')());
         }
     },
 

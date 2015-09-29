@@ -10,6 +10,6 @@ LocalizePict.View.Abstract = Backbone.View.extend({
      * @returns the template string
      */
     template: function (id) {
-        return $('#' + id).html();
+        return _.template($('#' + id).html());
     }
 });
