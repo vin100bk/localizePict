@@ -10,9 +10,9 @@ LocalizePict.Collection.Pictures = Backbone.Collection.extend(_.extend(
      * @Override
      * Trigger an event after set operation
      */
-    set: function () {
+    set: function (models, options) {
         // @todo: handle duplicates on multiples providers
         LocalizePict.Collection.Pictures.__super__.set.apply(this, arguments);
-        this.trigger('set');
+        this.trigger('set', models);
     }
 }));

@@ -35,9 +35,6 @@ LocalizePict.Collection.PicturesModule.Facebook = {
                         if (response.status === 'connected') {
                             deferred.notify('Fetching pictures ...');
 
-                            // Notice the total number of pictures
-                            //deferred.notify('<strong>' + json.data.length + '</strong> picture(s) found');
-
                             /**
                              * Tagged pictures
                              */

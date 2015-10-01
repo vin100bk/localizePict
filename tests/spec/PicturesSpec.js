@@ -46,7 +46,7 @@ describe('Pictures', function () {
         it('Should trigger an event "set"', function() {
             spyOn(this.pictures, 'trigger');
             this.pictures.set(this.picturesData);
-            expect(this.pictures.trigger).toHaveBeenCalledWith('set');
+            expect(this.pictures.trigger).toHaveBeenCalledWith('set', jasmine.any(Array));
         });
     });
 });

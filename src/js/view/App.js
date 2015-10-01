@@ -8,7 +8,7 @@ LocalizePict.View.App = LocalizePict.View.Abstract.extend({
     /** The Google Map object */
     map: null,
 
-    /** Map between coordinates and marker */
+    /** Map: [coordinate] = {marker, [pictures]} */
     coordinates: {},
 
     /** Events */
@@ -55,58 +55,79 @@ LocalizePict.View.App = LocalizePict.View.Abstract.extend({
 
     /**
      * Update the application
+     * @param pictures: models to update
      */
-    update: function () {
-        this.populateMap();
+    update: function (pictures) {
+        this.populateMap(pictures);
     },
 
     /**
      * Populate the map with picture markers
+     * @param pictures: pictures used to populate (optionnal)
      */
-    populateMap: function () {
+    populateMap: function (pictures) {
+        pictures = pictures || this.model;
+
         /**
-         * Show markers
+         * Create markers
          */
-        var self = this;
-        this.model.each(function (picture) {
+        var markersToUpdate = {};
+        for(var i = 0; i < pictures.length; i++) {
+            var picture = pictures[i];
             var coordinatesKey = picture.get('location').latitude + '|' + picture.get('location').longitude;
 
-            if (!_.has(self.coordinates, coordinatesKey)) {
-                // New location
+            // We notify this coordinate has to be updated
+            markersToUpdate[coordinatesKey] = 1;
 
+            if (!_.has(this.coordinates, coordinatesKey)) {
+                // New location
                 // Create the market with the longitude and latitude of the current picture
                 var marker = new google.maps.Marker({
                     position: new google.maps.LatLng(picture.get('location').latitude, picture.get('location').longitude),
-                    map: self.map
+                    map: this.map
                 });
 
-                //google.maps.event.addListener(marker, 'click', self.showPreview.bind(null, picture));
-                google.maps.event.addListener(marker, 'mouseover', self.showPreview.bind(null, picture));
-                google.maps.event.addListener(marker, 'mouseout', self.hidePreview);
-
-                self.coordinates[coordinatesKey] = {
+                this.coordinates[coordinatesKey] = {
                     marker: marker,
-                    pictures: [picture],
-                    nb: 1
+                    pictures: [picture]
                 };
             } else {
                 // A marker is already created for this location
-                self.coordinates[coordinatesKey]['nb']++;
-                self.coordinates[coordinatesKey]['pictures'].push(picture);
-
-                var marker = self.coordinates[coordinatesKey]['marker'];
-                marker.setTitle(self.coordinates[coordinatesKey]['nb'] + ' pictures');
+                this.coordinates[coordinatesKey]['pictures'].push(picture);
             }
-        });
+        }
+
+        /**
+         * Attach event on markers
+         */
+        for(var coordinateKey in markersToUpdate) {
+            var infos = this.coordinates[coordinateKey];
+
+            // Events
+            google.maps.event.addListener(infos.marker, 'mouseover', this.showPreview.bind(null, infos.pictures));
+            google.maps.event.addListener(infos.marker, 'mouseout', this.hidePreview);
+
+            // Title
+            infos.marker.setTitle(infos.pictures.length + ' pictures');
+        }
     },
 
     /**
-     * Show the picture icon as preview
-     * @param picture
+     * Show pictures icon as preview
+     * @param pictures
      */
-    showPreview: function(picture) {
+    showPreview: function(pictures) {
+        console.log('test');
         var preview = $('#preview');
-        preview.html('<img src="' + picture.get('icon') + '" alt="" />');
+        preview.empty();
+        for(var i = 0; i < pictures.length; i++) {
+            preview.append('<img src="' + pictures[i].get('icon') + '" alt="" />');
+
+            if(i >= 5) {
+                break;
+            }
+        }
+
         preview.removeClass('hidden');
     },
 

@@ -21,8 +21,6 @@
  * Preview section
  */
 #preview {
-	max-width: 100px;
-	max-height: 100px;
 	position: fixed;
 	z-index: 5;
 	left: 0;
@@ -30,6 +28,9 @@
 
 	img {
 		display: block;
+		float: left;
+		max-width: 100px;
+		max-height: 100px;
 	}
 }
 
