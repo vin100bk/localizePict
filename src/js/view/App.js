@@ -58,14 +58,6 @@ LocalizePict.View.App = LocalizePict.View.Abstract.extend({
      * @param pictures: models to update
      */
     update: function (pictures) {
-        this.populateMap(pictures);
-    },
-
-    /**
-     * Populate the map with picture markers
-     * @param pictures: pictures used to populate (optionnal)
-     */
-    populateMap: function (pictures) {
         pictures = pictures || this.model;
 
         /**
