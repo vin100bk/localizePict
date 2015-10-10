@@ -65,7 +65,8 @@ describe('Pictures::Facebook', function () {
             /**
              * Process the callback of getScript
              */
-                // Create a mock for the FB object
+
+            // Create a mock for the FB object
             FB = jasmine.createSpyObj('FB', [
                 'init',
                 'getLoginStatus',
@@ -81,16 +82,17 @@ describe('Pictures::Facebook', function () {
             expect($.getScript.calls.count()).toEqual(1);
         });
 
-        it('Should call FB.init()', function () {
-            // Init
-            expect(FB.init).toHaveBeenCalledWith({
-                appId: jasmine.any(String),
-                version: jasmine.any(String)
-            });
+        it('Should throw an error with a no compliant response', function () {
+            // Create a mock response object
+            var response = jasmine.createSpy('response');
+
+            // Process the callback of FB.getScript()
+            var getLoginStatusCallback = FB.getLoginStatus.calls.argsFor(0)[0];
+
+            expect(getLoginStatusCallback.bind(null, response)).toThrow();
         });
 
-        describe('When not connected', function () {
-
+        describe('When connected', function() {
             it('Should call FB.login()', function () {
                 // Create a mock response object
                 var response = jasmine.createSpy('response');
@@ -100,17 +102,7 @@ describe('Pictures::Facebook', function () {
                 var getLoginStatusCallback = FB.getLoginStatus.calls.argsFor(0)[0];
                 getLoginStatusCallback(response);
 
-                expect(FB.login).toHaveBeenCalledWith({scope: 'user_photos'});
-            });
-
-            it('Should throw an error with a no compliant response', function () {
-                // Create a mock response object
-                var response = jasmine.createSpy('response');
-
-                // Process the callback of FB.getScript()
-                var getLoginStatusCallback = FB.getLoginStatus.calls.argsFor(0)[0];
-
-                expect(getLoginStatusCallback.bind(null, response)).toThrow();
+                expect(FB.login).toHaveBeenCalled();
             });
         });
 
@@ -124,11 +116,6 @@ describe('Pictures::Facebook', function () {
                 // Process the callback of FB.getScript()
                 var getLoginStatusCallback = FB.getLoginStatus.calls.argsFor(0)[0];
                 getLoginStatusCallback(response);
-            });
-
-
-            it('Should call FB.getLoginStatus()', function () {
-                expect(FB.getLoginStatus).toHaveBeenCalledWith(jasmine.any(Function));
             });
 
             describe('Tagged pictures', function () {
@@ -215,11 +202,11 @@ describe('Pictures::Facebook', function () {
             this.apiCallback = FB.api.calls.argsFor(0)[3];
         });
 
-        it('Should call FB.api', function() {
+        it('Should call FB.api', function () {
             expect(FB.api).toHaveBeenCalledWith('http://mytest', 'get', jasmine.any(Object), jasmine.any(Function));
         });
 
-        describe('With one page', function() {
+        describe('With one page', function () {
             describe('With a standard JSON', function () {
 
                 describe('With localized pictures', function () {
@@ -261,12 +248,12 @@ describe('Pictures::Facebook', function () {
             });
         });
 
-        describe('With multiples pages (and standard JSON)', function() {
+        describe('With multiples pages (and standard JSON)', function () {
             beforeEach(function () {
                 this.apiCallback(this.data['fbPicturesExampleWithPages.json']);
             });
 
-            it('Should call .getPicturesFromFb() recursively', function() {
+            it('Should call .getPicturesFromFb() recursively', function () {
                 expect(this.pictures.getPicturesFromFb).toHaveBeenCalledWith('https://gotomysecondpage');
                 expect(this.pictures.getPicturesFromFb.calls.count()).toEqual(2);
             });

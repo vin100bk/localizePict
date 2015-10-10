@@ -117,7 +117,6 @@ LocalizePict.View.App = LocalizePict.View.Abstract.extend({
      * @param pictures
      */
     showPreview: function(pictures) {
-        console.log('test');
         var preview = $('#preview');
         preview.empty();
         for(var i = 0; i < pictures.length; i++) {
