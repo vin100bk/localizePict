@@ -1,7 +1,7 @@
 /**
  * Tests suite for Picture model
  */
-describe('Picture model', function () {
+describe('Picture', function () {
 
     describe('.constructor()', function () {
 

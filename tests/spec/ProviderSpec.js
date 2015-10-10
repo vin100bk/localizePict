@@ -1,7 +1,7 @@
 /**
  * Tests suite for Provider model
  */
-describe('Provider model', function () {
+describe('Provider', function () {
 
     describe('FacebookProvider', function() {
 
