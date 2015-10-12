@@ -1,10 +1,9 @@
 /**
  * Tests suite for PicturesFb collection
  */
-describe('Pictures::Facebook', function () {
+describe('LocalizePict.Collection.PicturesModule.Facebook', function () {
 
     beforeEach(function () {
-        spyOn(LocalizePict.View.App.prototype, 'update').and.callThrough();
         this.app = new LocalizePict.View.App();
         this.pictures = this.app.model;
 

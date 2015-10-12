@@ -1,7 +1,7 @@
 /**
  * Tests suite for Pictures collection
  */
-describe('Pictures', function () {
+describe('LocalizePict.Collection.Pictures', function () {
 
     beforeEach(function () {
         spyOn(LocalizePict.View.App.prototype, 'update').and.callThrough();

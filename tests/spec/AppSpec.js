@@ -1,7 +1,7 @@
 /**
  * Tests suite for App
  */
-describe('App', function () {
+describe('LocalizePict.View.App', function () {
 
     describe('.update()', function () {
 

@@ -1,7 +1,7 @@
 /**
  * Tests suite for Picture model
  */
-describe('Picture', function () {
+describe('LocalizePict.Model.Picture', function () {
 
     describe('.constructor()', function () {
 
@@ -149,7 +149,7 @@ describe('Picture', function () {
     });
 
     describe('.validate()', function() {
-        it('Should trigger an error without pid', function () {
+        it('Should return an error without pid', function () {
             expect(LocalizePict.Model.Picture.prototype.validate({
                 icon: 'http://myicon.jpg',
                 picture: 'http://myoriginal.jpg',
@@ -163,7 +163,7 @@ describe('Picture', function () {
             });
         });
 
-        it('Should trigger an error without icon', function () {
+        it('Should return an error without icon', function () {
             expect(LocalizePict.Model.Picture.prototype.validate({
                 pid: '1',
                 picture: 'http://myoriginal.jpg',
@@ -177,7 +177,7 @@ describe('Picture', function () {
             });
         });
 
-        it('Should trigger an error without picture', function () {
+        it('Should return an error without picture', function () {
             expect(LocalizePict.Model.Picture.prototype.validate({
                 pid: '1',
                 icon: 'http://myicon.jpg',
@@ -191,7 +191,7 @@ describe('Picture', function () {
             });
         });
 
-        it('Should trigger an error without location', function () {
+        it('Should return an error without location', function () {
             expect(LocalizePict.Model.Picture.prototype.validate({
                 pid: '1',
                 icon: 'http://myicon.jpg',
@@ -202,7 +202,7 @@ describe('Picture', function () {
             });
         });
 
-        it('Should trigger an error with an empty location', function () {
+        it('Should return an error with an empty location', function () {
             expect(LocalizePict.Model.Picture.prototype.validate({
                 pid: '1',
                 icon: 'http://myicon.jpg',
@@ -214,7 +214,7 @@ describe('Picture', function () {
             });
         });
 
-        it('Should trigger an error with a location without latitude', function () {
+        it('Should return an error with a location without latitude', function () {
             expect(LocalizePict.Model.Picture.prototype.validate({
                 pid: '1',
                 icon: 'http://myicon.jpg',
@@ -228,7 +228,7 @@ describe('Picture', function () {
             });
         });
 
-        it('Should trigger an error with a location without longitude', function () {
+        it('Should return an error with a location without longitude', function () {
             expect(LocalizePict.Model.Picture.prototype.validate({
                 pid: '1',
                 icon: 'http://myicon.jpg',
@@ -240,6 +240,18 @@ describe('Picture', function () {
                 name: 'PictureException',
                 message: 'The location is not valid'
             });
+        });
+
+        it('Should return nothing with valid data', function () {
+            expect(LocalizePict.Model.Picture.prototype.validate({
+                pid: '1',
+                icon: 'http://myicon.jpg',
+                picture: 'http://myoriginal.jpg',
+                location: {
+                    latitude: '40.713509',
+                    longitude: '-73.941141'
+                }
+            })).toBeUndefined();
         });
     });
 });
