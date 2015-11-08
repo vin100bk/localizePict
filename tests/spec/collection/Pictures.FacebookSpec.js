@@ -3,8 +3,12 @@
  */
 describe('LocalizePict.Collection.PicturesModule.Facebook', function () {
 
+    beforeAll(function() {
+        jasmine.getJSONFixtures().fixturesPath = 'data';
+    });
+
     beforeEach(function () {
-        this.app = new LocalizePict.View.App();
+        this.app = new LocalizePict.View.Map();
         this.pictures = this.app.model;
 
         // Sample of pictures
@@ -53,7 +57,7 @@ describe('LocalizePict.Collection.PicturesModule.Facebook', function () {
             spyOn($, 'getScript').and.returnValue(promiseGetScript);
             spyOn(this.pictures, 'set').and.callThrough();
             spyOn(this.pictures, 'getPicturesFromFb').and.returnValues(this.deferredTagged, this.deferredUploaded);
-            spyOn(this.overallDeferred, 'resolve').and.returnValue(this.overallDeferred);
+            spyOn(this.overallDeferred, 'resolveWith').and.returnValue(this.overallDeferred);
             spyOn($, 'Deferred').and.returnValue(this.overallDeferred);
 
             /**
@@ -160,11 +164,11 @@ describe('LocalizePict.Collection.PicturesModule.Facebook', function () {
             });
 
             it('Should resolve the process when tagged pictures and uploaded pictures are resolved', function () {
-                expect(this.overallDeferred.resolve).not.toHaveBeenCalled();
+                expect(this.overallDeferred.resolveWith).not.toHaveBeenCalled();
                 this.deferredTagged.resolve(this.picts);
-                expect(this.overallDeferred.resolve).not.toHaveBeenCalled();
+                expect(this.overallDeferred.resolveWith).not.toHaveBeenCalled();
                 this.deferredUploaded.resolve(this.picts);
-                expect(this.overallDeferred.resolve).toHaveBeenCalled();
+                expect(this.overallDeferred.resolveWith).toHaveBeenCalled();
             });
         });
     });

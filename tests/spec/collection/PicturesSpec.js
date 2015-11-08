@@ -4,8 +4,8 @@
 describe('LocalizePict.Collection.Pictures', function () {
 
     beforeEach(function () {
-        spyOn(LocalizePict.View.App.prototype, 'update').and.callThrough();
-        this.app = new LocalizePict.View.App();
+        spyOn(LocalizePict.View.Map.prototype, 'update').and.callThrough();
+        this.app = new LocalizePict.View.Map();
         this.pictures = this.app.model;
     });
 

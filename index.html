@@ -1,64 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>Localize My Pict</title>
+<head>
+    <meta charset="utf-8">
+    <title>Localize My Pict</title>
 
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="bower_components/normalize.css/normalize.css"/>
-        <link rel="stylesheet" href="src/css/reset.css"/>
-        <link rel="stylesheet" href="src/css/style.css"/>
-        <link rel="stylesheet" href="src/css/spinner.css"/>
-    </head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="bower_components/normalize.css/normalize.css"/>
+    <link rel="stylesheet" href="src/css/reset.css"/>
+    <link rel="stylesheet" href="src/css/style.css"/>
+    <link rel="stylesheet" href="src/css/error.css"/>
+    <link rel="stylesheet" href="src/css/spinner.css"/>
+</head>
 
-    <body>
-        <section id="global">
-            <section id="map"></section>
+<body>
+<main></main>
+<div id="fb-root"></div>
+</body>
 
-            <section id="preview" class="hidden"></section>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="//maps.googleapis.com/maps/api/js?key=AIzaSyDRdFfPvoXq61BUKdBT8yeJQEPsf9B6xDI"></script>
+<script src="bower_components/underscore/underscore-min.js"></script>
+<script src="bower_components/backbone/backbone-min.js"></script>
 
-            <section id="notices" class="hidden"></section>
+<script src="src/js/LocalizePict.js"></script>
+<script src="src/js/model/Provider.js"></script>
+<script src="src/js/model/Picture.js"></script>
+<script src="src/js/collection/pictures/Facebook.js"></script>
+<script src="src/js/collection/Pictures.js"></script>
+<script src="src/js/view/Abstract.js"></script>
+<script src="src/js/view/Map.js"></script>
+<script src="src/js/view/Picture.js"></script>
+<script src="src/js/view/Error.js"></script>
+<script src="src/js/router/Router.js"></script>
 
-            <nav id="actions">
-                <ul id="add-pict" class="nostyle">
-                    <li><a href="#" id="add-pict-fb" class="provider"><i class="fa fa-facebook-official"></i> Add from Facebook</a></li>
+<!--
+    Sections templates
+-->
+
+<!-- Map -->
+<script id="tplMap" type="text/template">
+    <section id="global">
+        <section id="map"></section>
+        <section id="preview" class="hidden"></section>
+        <section id="notices" class="hidden"></section>
+
+        <nav id="actions">
+            <ul id="add-pict" class="nostyle">
+                <li><a href="#" id="add-pict-fb" class="provider"><i class="fa fa-facebook-official"></i> Add from
+                    Facebook</a></li>
+            </ul>
+        </nav>
+    </section>
+</script>
+
+<!--
+    Specific templates
+-->
+
+<!-- Provider options -->
+<script id="tplProviderOpts" type="text/template">
+    <p class="providerOpts"><a href="#refresh-picts">Refresh</a> | <a href="remove-picts">Remove</a></p>
+</script>
+
+<!-- Spinner -->
+<script id="tplSpinner" type="text/template">
+    <div class="spinner-loader spinner"></div>
+</script>
+
+<!-- Error popup -->
+<script id="tplError" type="text/template">
+    <div class="popup" id="error">
+        <p><%= message %></p>
+
+        <p class="popup-button">
+            <button class="button-submit">Ok</button>
+        </p>
+    </div>
+</script>
+
+<!-- Error page -->
+<script id="tplErrorPage" type="text/template">
+    <section id="global-error">
+        <h1><%= title %></h1>
+        <%= icon %>
+        <p><%= message %></p>
+
+        <p class="text-center"><a href="">Go back to LocalizeMyPict</a></p>
+    </section>
+</script>
+
+<!-- Picture page -->
+<script id="tplPicturePage" type="text/template">
+    <section id="global-picture">
+        <section id="global-picture-img">
+            <img src="<%= picture %>" alt="<%= (details.label) ? details.label : '' %>"
+                 title="<%= (details.label) ? details.label : '' %>"/>
+
+            <% if (Object.keys(details).length > 0) { %>
+            <aside>
+                <ul>
+                    <% for(var key in details) { %>
+                    <li><% key %>: <strong><% details[key] %></strong></li>
+                    <% } %>
                 </ul>
-            </nav>
+            </aside>
+            <% } %>
         </section>
 
-        <div id="fb-root"></div>
+        <% if (pictures.length > 0) { %>
+        <section id="global-picture-list"></section>
+        <% } %>
+    </section>
+</script>
 
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-        <script src="//maps.googleapis.com/maps/api/js?key=AIzaSyDRdFfPvoXq61BUKdBT8yeJQEPsf9B6xDI"></script>
-        <script src="bower_components/underscore/underscore-min.js"></script>
-        <script src="bower_components/backbone/backbone-min.js"></script>
-
-        <script src="src/js/LocalizePict.js"></script>
-        <script src="src/js/model/Provider.js"></script>
-        <script src="src/js/model/Picture.js"></script>
-        <script src="src/js/collection/pictures/Facebook.js"></script>
-        <script src="src/js/collection/Pictures.js"></script>
-        <script src="src/js/view/Abstract.js"></script>
-        <script src="src/js/view/App.js"></script>
-        <script src="src/js/view/Actions.js"></script>
-        <script src="src/js/view/Notices.js"></script>
-
-        <!-- Provider options -->
-        <script id="tplProviderOpts" type="text/template">
-            <p class="providerOpts"><a href="#refresh-picts">Refresh</a> | <a href="remove-picts">Remove</a></p>
-        </script>
-
-        <!-- Spinner -->
-        <script id="tplSpinner" type="text/template">
-            <div class="spinner-loader spinner"></div>
-        </script>
-
-        <script>
-            <!--
-            $(function() {
-                new LocalizePict.View.App();
-            });
-            -->
-        </script>
-</body>
+<script>
+    <!--
+    $(function () {
+        new LocalizePict.Router.Router();
+        Backbone.history.start();
+    });
+    -->
+</script>
 </html>

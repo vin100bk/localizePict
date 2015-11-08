@@ -5,14 +5,15 @@ LocalizePict.Collection.PicturesModule.Facebook = {
 
     /**
      * Add pictures from Facebook to the collection
+     * @param context: application context
      */
-    addFromFb: function () {
+    addFromFb: function (context) {
         var self = this;
 
         // Global deferred
         var deferred = $.Deferred();
 
-        deferred.notify('Connecting to Facebook ...');
+        deferred.notifyWith(context, ['Connecting to Facebook ...']);
 
         try {
             $.ajaxSetup({cache: true});
@@ -33,7 +34,7 @@ LocalizePict.Collection.PicturesModule.Facebook = {
                         }
 
                         if (response.status === 'connected') {
-                            deferred.notify('Fetching pictures ...');
+                            deferred.notifyWith(context, ['Fetching pictures ...']);
 
                             /**
                              * Tagged pictures
@@ -44,7 +45,7 @@ LocalizePict.Collection.PicturesModule.Facebook = {
                                     if(pictures.length > 0) {
                                         // Set new picture in the collection
                                         self.set(pictures);
-                                        deferred.notify('<strong>' + pictures.length + '</strong> tagged picture(s) added');
+                                        deferred.notifyWith(context, ['<strong>' + pictures.length + '</strong> tagged picture(s) added']);
                                     }
                                 });
 
@@ -57,7 +58,7 @@ LocalizePict.Collection.PicturesModule.Facebook = {
                                     if(pictures.length > 0) {
                                         // Set new picture in the collection
                                         self.set(pictures);
-                                        deferred.notify('<strong>' + pictures.length + '</strong> uploaded picture(s) added');
+                                        deferred.notifyWith(context, ['<strong>' + pictures.length + '</strong> uploaded picture(s) added']);
                                     }
                                 });
 
@@ -68,11 +69,10 @@ LocalizePict.Collection.PicturesModule.Facebook = {
                             $.when(deferredTagged, deferredUploaded)
                                 .done(function (taggedPicts, uploadedPicts) {
                                     var nbPicts = taggedPicts.length + uploadedPicts.length;
-                                    deferred.resolve('Total: <strong>' + nbPicts + '</strong> picture(s) added !');
+                                    deferred.resolveWith(context, ['Total: <strong>' + nbPicts + '</strong> picture(s) added !']);
                                 })
                                 .fail(function(e) {
-                                    // In case of an error, we just notify it, is allows to at least display pictures with no error
-                                    deferred.notify('Error');
+                                    deferred.rejectWith(context, [e]);
                                 });
                         } else {
                             FB.login({scope: 'user_photos'});
@@ -81,7 +81,7 @@ LocalizePict.Collection.PicturesModule.Facebook = {
                 });
         }
         catch (e) {
-            deferred.reject(e);
+            deferred.rejectWith(context, [e]);
         }
 
         return deferred.promise();
