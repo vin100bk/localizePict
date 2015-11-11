@@ -23,7 +23,8 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
 
         // Init the model
         this.model = new LocalizePict.Collection.Pictures();
-        this.model.on('set', this.update, this);
+        this.model.on('update', this.update, this);
+        this.model.on('reset', this.populateMap, this);
 
         _.bindAll(this, 'addFbPictures', 'closeNotices', 'showPreview', 'goToPicture');
     },
@@ -38,6 +39,13 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
 
         // Init the map
         this.initMap();
+
+        // Fetch initial data
+        this.model.fetch();
+
+        // Init provider buttons
+        this.initProviderButtons();
+
         return this;
     },
 
@@ -45,14 +53,14 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
      * Is the application rendered?
      * @returns {boolean}
      */
-    isRendered: function() {
+    isRendered: function () {
         return $('#global').length == 1;
     },
 
     /**
      * Init the map
      */
-    initMap: function() {
+    initMap: function () {
         var mapOptions = {
             center: {lat: -34.397, lng: 150.644},
             zoom: 2
@@ -71,34 +79,45 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
     update: function (pictures) {
         pictures = pictures || this.model;
 
+        this.populateMap(pictures);
+        pictures.save();
+    },
+
+    /**
+     * Populate the map with pictures
+     * @param pictures: the pictures
+     */
+    populateMap: function (pictures) {
+        var self = this;
+        pictures = pictures || this.model;
+
         /**
          * Create markers
          */
         var markersToUpdate = {};
-        for (var i = 0; i < pictures.length; i++) {
-            var picture = pictures[i];
+        pictures.each(function (picture) {
             var coordinatesKey = picture.get('location').latitude + '|' + picture.get('location').longitude;
 
             // We notify this coordinate has to be updated
             markersToUpdate[coordinatesKey] = 1;
 
-            if (!_.has(this.coordinates, coordinatesKey)) {
+            if (!_.has(self.coordinates, coordinatesKey)) {
                 // New location
                 // Create the market with the longitude and latitude of the current picture
                 var marker = new google.maps.Marker({
                     position: new google.maps.LatLng(picture.get('location').latitude, picture.get('location').longitude),
-                    map: this.map
+                    map: self.map
                 });
 
-                this.coordinates[coordinatesKey] = {
+                self.coordinates[coordinatesKey] = {
                     marker: marker,
                     pictures: [picture]
                 };
             } else {
                 // A marker is already created for this location
-                this.coordinates[coordinatesKey]['pictures'].push(picture);
+                self.coordinates[coordinatesKey]['pictures'].push(picture);
             }
-        }
+        });
 
         /**
          * Attach event on markers
@@ -166,6 +185,16 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
     },
 
     /**
+     * Init provider buttons (enable or disable them)
+     */
+    initProviderButtons: function () {
+        if (this.model.findWhere({provider: 'fb'})) {
+            // Facebook
+            $('#add-pict-fb').addClass('active');
+        }
+    },
+
+    /**
      * Callback when a user want to add Facebook pictures
      */
     addFbPictures: function (e) {
@@ -192,7 +221,7 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
                     this.removeOverlayNotices();
                     this.addNotice(message);
                     this.addCloseButtonToNotices();
-                    element.addClass('active');
+                    element.addClass('active active-animated');
                 })
                 .fail(function (e) {
                     this.removeOverlayNotices();
@@ -225,7 +254,7 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
      * Close notices
      */
     closeNotices: function (e) {
-        if(e) {
+        if (e) {
             e.preventDefault();
         }
 
@@ -237,7 +266,7 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
     /**
      * Add an overlay over the notices
      */
-    addOverlayNotices: function() {
+    addOverlayNotices: function () {
         this.removeOverlayNotices();
         $('#notices').after('<div class="overlay" id="overlay-notices">' + this.template('tplSpinner')() + '</div>');
     },
@@ -245,7 +274,7 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
     /**
      * Remove the notices overlay
      */
-    removeOverlayNotices: function() {
+    removeOverlayNotices: function () {
         $('#overlay-notices').remove();
     }
 

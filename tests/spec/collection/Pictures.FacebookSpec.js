@@ -3,10 +3,6 @@
  */
 describe('LocalizePict.Collection.PicturesModule.Facebook', function () {
 
-    beforeAll(function() {
-        jasmine.getJSONFixtures().fixturesPath = 'data';
-    });
-
     beforeEach(function () {
         this.app = new LocalizePict.View.Map();
         this.pictures = this.app.model;
@@ -55,7 +51,7 @@ describe('LocalizePict.Collection.PicturesModule.Facebook', function () {
              */
             spyOn(promiseGetScript, 'done').and.callThrough();
             spyOn($, 'getScript').and.returnValue(promiseGetScript);
-            spyOn(this.pictures, 'set').and.callThrough();
+            spyOn(this.pictures, 'add').and.callThrough();
             spyOn(this.pictures, 'getPicturesFromFb').and.returnValues(this.deferredTagged, this.deferredUploaded);
             spyOn(this.overallDeferred, 'resolveWith').and.returnValue(this.overallDeferred);
             spyOn($, 'Deferred').and.returnValue(this.overallDeferred);
@@ -127,18 +123,18 @@ describe('LocalizePict.Collection.PicturesModule.Facebook', function () {
                     expect(this.pictures.getPicturesFromFb).toHaveBeenCalledWith('/me/photos/');
                 });
 
-                it('Should not set pictures when .getPicturesFromFb() is not resolved', function () {
-                    expect(this.pictures.set).not.toHaveBeenCalled();
+                it('Should not add pictures when .getPicturesFromFb() is not resolved', function () {
+                    expect(this.pictures.add).not.toHaveBeenCalled();
                 });
 
-                it('Should not set pictures when .getPicturesFromFb() is resolved with an empty array of pictures', function () {
+                it('Should not add pictures when .getPicturesFromFb() is resolved with an empty array of pictures', function () {
                     this.deferredTagged.resolve([]);
-                    expect(this.pictures.set).not.toHaveBeenCalled();
+                    expect(this.pictures.add).not.toHaveBeenCalled();
                 });
 
-                it('Should set pictures when .getPicturesFromFb() is resolved', function () {
+                it('Should add pictures when .getPicturesFromFb() is resolved', function () {
                     this.deferredTagged.resolve(this.picts);
-                    expect(this.pictures.set).toHaveBeenCalledWith(this.picts);
+                    expect(this.pictures.add).toHaveBeenCalledWith(this.picts);
                 });
             });
 
@@ -148,18 +144,18 @@ describe('LocalizePict.Collection.PicturesModule.Facebook', function () {
                     expect(this.pictures.getPicturesFromFb).toHaveBeenCalledWith('/me/photos/?type=uploaded');
                 });
 
-                it('Should not set pictures when .getPicturesFromFb() is not resolved', function () {
-                    expect(this.pictures.set).not.toHaveBeenCalled();
+                it('Should not add pictures when .getPicturesFromFb() is not resolved', function () {
+                    expect(this.pictures.add).not.toHaveBeenCalled();
                 });
 
-                it('Should not set pictures when .getPicturesFromFb() is resolved with an empty array of pictures', function () {
+                it('Should not add pictures when .getPicturesFromFb() is resolved with an empty array of pictures', function () {
                     this.deferredUploaded.resolve([]);
-                    expect(this.pictures.set).not.toHaveBeenCalled();
+                    expect(this.pictures.add).not.toHaveBeenCalled();
                 });
 
-                it('Should set pictures when .getPicturesFromFb() is resolved', function () {
+                it('Should add pictures when .getPicturesFromFb() is resolved', function () {
                     this.deferredUploaded.resolve(this.picts);
-                    expect(this.pictures.set).toHaveBeenCalledWith(this.picts);
+                    expect(this.pictures.add).toHaveBeenCalledWith(this.picts);
                 });
             });
 

@@ -35,7 +35,7 @@ LocalizePict.Model.Picture = Backbone.Model.extend({
     parse: function(picture, options) {
         if (_.has(picture, 'provider')) {
             // If provider is in attributes, we use it to prefix the ID attribute
-            picture.id = picture.provider.get('prefix') + picture.pid;
+            picture.id = picture.provider + '_' + picture.pid;
         } else {
             // If not, id = pid (not recommended with multiple providers)
             picture.id = picture.pid;

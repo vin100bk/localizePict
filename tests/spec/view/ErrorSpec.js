@@ -3,24 +3,8 @@
  */
 describe('LocalizePict.View.Error', function () {
 
-    beforeAll(function () {
-        jasmine.getFixtures().fixturesPath = '..';
-
-        var indexContent = readFixtures('index.html');
-        $('body').after($(indexContent).filter('script[type="text/template"]'));
-    });
-
     beforeEach(function () {
         this.error = new LocalizePict.View.Error({router: new LocalizePict.Router.Router()});
-    });
-
-    afterEach(function () {
-        // Remove all HTML inserted
-        $('main').empty();
-    });
-
-    afterAll(function() {
-        $('body ~ script[type="text/template"]').remove();
     });
 
     describe('.render()', function() {

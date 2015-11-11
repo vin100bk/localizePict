@@ -103,10 +103,9 @@ describe('LocalizePict.Model.Picture', function () {
 
     describe('.parse()', function () {
         it('Should generate an ID with the provider prefix (provider is in data)', function() {
-            var provider = new LocalizePict.Model.FacebookProvider();
             expect(LocalizePict.Model.Picture.prototype.parse({
                 pid: '1',
-                provider: provider,
+                provider: 'fb',
                 icon: 'http://myicon.jpg',
                 picture: 'http://myoriginal.jpg',
                 location: {
@@ -114,9 +113,9 @@ describe('LocalizePict.Model.Picture', function () {
                     longitude: '-73.941141',
                 }
             })).toEqual({
-                id: provider.get('prefix') + '1',
+                id: 'fb_1',
                 pid: '1',
-                provider: provider,
+                provider: 'fb',
                 icon: 'http://myicon.jpg',
                 picture: 'http://myoriginal.jpg',
                 location: {

@@ -43,8 +43,8 @@ LocalizePict.Collection.PicturesModule.Facebook = {
                             deferredTagged.promise()
                                 .done(function (pictures) {
                                     if(pictures.length > 0) {
-                                        // Set new picture in the collection
-                                        self.set(pictures);
+                                        // Add new picture in the collection
+                                        self.add(pictures);
                                         deferred.notifyWith(context, ['<strong>' + pictures.length + '</strong> tagged picture(s) added']);
                                     }
                                 });
@@ -56,8 +56,8 @@ LocalizePict.Collection.PicturesModule.Facebook = {
                             deferredUploaded.promise()
                                 .done(function (pictures) {
                                     if(pictures.length > 0) {
-                                        // Set new picture in the collection
-                                        self.set(pictures);
+                                        // Add new picture in the collection
+                                        self.add(pictures);
                                         deferred.notifyWith(context, ['<strong>' + pictures.length + '</strong> uploaded picture(s) added']);
                                     }
                                 });
@@ -119,7 +119,7 @@ LocalizePict.Collection.PicturesModule.Facebook = {
                          */
                         var picture = new LocalizePict.Model.Picture({
                             pid: element.id,
-                            provider: new LocalizePict.Model.FacebookProvider(),
+                            provider: 'fb',
                             album: element.album,
                             icon: element.picture,
                             picture: element.source,

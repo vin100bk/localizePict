@@ -3,17 +3,7 @@
  */
 describe('LocalizePict.Router.Router', function () {
 
-    beforeAll(function () {
-        jasmine.getFixtures().fixturesPath = '..';
-
-        var indexContent = readFixtures('index.html');
-        $('body').after($(indexContent).filter('script[type="text/template"]'));
-    });
-
     afterEach(function () {
-        // Remove all HTML inserted
-        $('main').empty();
-
         this.router.navigate('', {replace: true});
         Backbone.history.stop();
     });
@@ -25,10 +15,6 @@ describe('LocalizePict.Router.Router', function () {
 
         // Needed. Avoid navigate to the same page
         this.router.navigate('elsewhere', {replace: true});
-    });
-
-    afterAll(function() {
-        $('body ~ script[type="text/template"]').remove();
     });
 
     describe('index', function () {

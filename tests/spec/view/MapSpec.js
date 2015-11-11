@@ -3,32 +3,63 @@
  */
 describe('LocalizePict.View.Map', function () {
 
-    beforeAll(function () {
-        jasmine.getFixtures().fixturesPath = '..';
-
-        var indexContent = readFixtures('index.html');
-        $('body').after($(indexContent).filter('script[type="text/template"]'));
-    });
-
     beforeEach(function () {
         spyOn(LocalizePict.View.Map.prototype, 'addFbPictures').and.callThrough();
         spyOn(LocalizePict.View.Map.prototype, 'closeNotices').and.callThrough();
+
+        this.picturesData = [
+            new LocalizePict.Model.Picture({
+                pid: '1',
+                icon: 'http://myicon1.jpg',
+                picture: 'http://myoriginal1.jpg',
+                location: {
+                    latitude: '40.713509',
+                    longitude: '-73.941141',
+                }
+            }),
+            new LocalizePict.Model.Picture({
+                pid: '2',
+                icon: 'http://myicon2.jpg',
+                picture: 'http://myoriginal2.jpg',
+                location: {
+                    latitude: '40.713509',
+                    longitude: '-73.941141',
+                }
+            }),
+            new LocalizePict.Model.Picture({
+                pid: '3',
+                icon: 'http://myicon3.jpg',
+                picture: 'http://myoriginal3.jpg',
+                location: {
+                    latitude: '41.713509',
+                    longitude: '-73.941141',
+                }
+            }),
+            new LocalizePict.Model.Picture({
+                pid: '4',
+                provider: 'fb',
+                icon: 'http://myicon4.jpg',
+                picture: 'http://myoriginal4.jpg',
+                location: {
+                    latitude: '40.713509',
+                    longitude: '-73.941142',
+                }
+            }),
+            new LocalizePict.Model.Picture({
+                pid: '5',
+                icon: 'http://myicon5.jpg',
+                picture: 'http://myoriginal5.jpg',
+                location: {
+                    latitude: '40.713509',
+                    longitude: '-73.941142',
+                }
+            })];
 
         var router = new LocalizePict.Router.Router();
         this.app = router.app;
     });
 
-    afterEach(function () {
-        // Remove all HTML inserted
-        $('main').empty();
-    });
-
-    afterAll(function() {
-        $('body ~ script[type="text/template"]').remove();
-    });
-
     describe('.render()', function () {
-
         it('Should insert HTML in the page', function () {
             this.app.render();
             expect($('#global').length).toEqual(1);
@@ -61,54 +92,25 @@ describe('LocalizePict.View.Map', function () {
         });
     });
 
-    describe('.update()', function () {
+    describe('.update()', function() {
+        beforeEach(function() {
+            spyOn(this.app, 'populateMap');
+            spyOn(this.app.model, 'save');
+            this.app.update();
+        });
+
+        it('Should call .populateMap()', function() {
+            expect(this.app.populateMap).toHaveBeenCalled();
+        });
+
+        it('Should save pictures', function() {
+            expect(this.app.model.save).toHaveBeenCalled();
+        });
+    });
+
+    describe('.populateMap()', function () {
         beforeEach(function () {
-            var pictures = [
-                new LocalizePict.Model.Picture({
-                    pid: '1',
-                    icon: 'http://myicon1.jpg',
-                    picture: 'http://myoriginal1.jpg',
-                    location: {
-                        latitude: '40.713509',
-                        longitude: '-73.941141',
-                    }
-                }),
-                new LocalizePict.Model.Picture({
-                    pid: '2',
-                    icon: 'http://myicon2.jpg',
-                    picture: 'http://myoriginal2.jpg',
-                    location: {
-                        latitude: '40.713509',
-                        longitude: '-73.941141',
-                    }
-                }),
-                new LocalizePict.Model.Picture({
-                    pid: '2',
-                    icon: 'http://myicon2.jpg',
-                    picture: 'http://myoriginal2.jpg',
-                    location: {
-                        latitude: '41.713509',
-                        longitude: '-73.941141',
-                    }
-                }),
-                new LocalizePict.Model.Picture({
-                    pid: '2',
-                    icon: 'http://myicon2.jpg',
-                    picture: 'http://myoriginal2.jpg',
-                    location: {
-                        latitude: '40.713509',
-                        longitude: '-73.941142',
-                    }
-                }),
-                new LocalizePict.Model.Picture({
-                    pid: '2',
-                    icon: 'http://myicon2.jpg',
-                    picture: 'http://myoriginal2.jpg',
-                    location: {
-                        latitude: '40.713509',
-                        longitude: '-73.941142',
-                    }
-                })];
+            var pictures = new LocalizePict.Collection.Pictures(this.picturesData);
 
             /**
              * Spies
@@ -124,7 +126,7 @@ describe('LocalizePict.View.Map', function () {
 
             // Clean old recorded coordinates
             this.app.coordinates = {};
-            this.app.update(pictures);
+            this.app.populateMap(pictures);
         });
 
         it('Should create a new marker only for pictures with a different location', function () {
@@ -158,65 +160,23 @@ describe('LocalizePict.View.Map', function () {
 
     describe('.showPreview()', function () {
         beforeEach(function () {
-            this.pictures = [
-                new LocalizePict.Model.Picture({
-                    pid: '1',
-                    icon: 'http://myicon1.jpg',
-                    picture: 'http://myoriginal1.jpg',
-                    location: {
-                        latitude: '40.713509',
-                        longitude: '-73.941141',
-                    }
-                }),
-                new LocalizePict.Model.Picture({
-                    pid: '2',
-                    icon: 'http://myicon2.jpg',
-                    picture: 'http://myoriginal2.jpg',
-                    location: {
-                        latitude: '40.713509',
-                        longitude: '-73.941141',
-                    }
-                })
-            ];
-
             this.app.render();
         });
 
         it('Should preview pictures', function () {
             expect($('#preview').length).toEqual(1);
             expect($('#preview').hasClass('hidden')).toBe(true);
-            this.app.showPreview(this.pictures);
+            this.app.showPreview(this.picturesData);
             expect($('#preview').hasClass('hidden')).toBe(false);
-            expect($('#preview').children().length).toEqual(2);
+            expect($('#preview').children().length).toEqual(5);
 
         });
     });
 
     describe('.hidePreview()', function () {
         beforeEach(function () {
-            var pictures = [
-                new LocalizePict.Model.Picture({
-                    pid: '1',
-                    icon: 'http://myicon1.jpg',
-                    picture: 'http://myoriginal1.jpg',
-                    location: {
-                        latitude: '40.713509',
-                        longitude: '-73.941141',
-                    }
-                }),
-                new LocalizePict.Model.Picture({
-                    pid: '2',
-                    icon: 'http://myicon2.jpg',
-                    picture: 'http://myoriginal2.jpg',
-                    location: {
-                        latitude: '40.713509',
-                        longitude: '-73.941141',
-                    }
-                })
-            ];
-
             this.app.render();
-            this.app.showPreview(pictures);
+            this.app.showPreview(this.picturesData);
         });
 
         it('Should hide the preview', function () {
@@ -227,33 +187,9 @@ describe('LocalizePict.View.Map', function () {
     });
 
     describe('.goToPicture()', function() {
-        beforeEach(function () {
-            this.pictures = [
-                new LocalizePict.Model.Picture({
-                    pid: '1',
-                    icon: 'http://myicon1.jpg',
-                    picture: 'http://myoriginal1.jpg',
-                    location: {
-                        latitude: '40.713509',
-                        longitude: '-73.941141',
-                    }
-                }),
-                new LocalizePict.Model.Picture({
-                    pid: '2',
-                    icon: 'http://myicon2.jpg',
-                    picture: 'http://myoriginal2.jpg',
-                    location: {
-                        latitude: '40.713509',
-                        longitude: '-73.941141',
-                    }
-                })
-            ];
-
-            spyOn(this.app.router, 'navigate');
-        });
-
         it('Should navigate to the first picture page', function() {
-            this.app.goToPicture(this.pictures);
+            spyOn(this.app.router, 'navigate');
+            this.app.goToPicture(this.picturesData);
             expect(this.app.router.navigate).toHaveBeenCalledWith('picture/1', jasmine.any(Object));
         });
     });
@@ -276,6 +212,18 @@ describe('LocalizePict.View.Map', function () {
             expect($('.providerOpts').hasClass('hidden')).toBe(true);
             this.app.showProviderOptions(this.elemt);
             expect($('.providerOpts').hasClass('hidden')).toBe(false);
+        });
+    });
+
+    describe('.initProviderButtons()', function() {
+        it('Should set button as active if there is data for a provider', function() {
+            this.app.render();
+            this.app.initProviderButtons();
+            expect($('#add-pict-fb').hasClass('active')).toBe(false);
+            this.app.model.sync('update', this.picturesData);
+            this.app.render();
+            this.app.initProviderButtons();
+            expect($('#add-pict-fb').hasClass('active')).toBe(true);
         });
     });
 

@@ -3,25 +3,9 @@
  */
 describe('LocalizePict.View.Abstract', function () {
 
-    beforeAll(function () {
-        jasmine.getFixtures().fixturesPath = '..';
-
-        var indexContent = readFixtures('index.html');
-        $('body').after($(indexContent).filter('script[type="text/template"]'));
-    });
-
     beforeEach(function () {
         var router = new LocalizePict.Router.Router();
         this.app = router.app;
-    });
-
-    afterEach(function () {
-        // Remove all HTML inserted
-        $('main').empty();
-    });
-
-    afterAll(function() {
-        $('body ~ script[type="text/template"]').remove();
     });
 
     describe('.template()', function() {

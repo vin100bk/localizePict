@@ -19,7 +19,6 @@
 
     <!-- include source files here... -->
     <script src="../src/js/LocalizePict.js"></script>
-    <script src="../src/js/model/Provider.js"></script>
     <script src="../src/js/model/Picture.js"></script>
     <script src="../src/js/collection/pictures/Facebook.js"></script>
     <script src="../src/js/collection/Pictures.js"></script>
@@ -38,6 +37,31 @@
     <script src="spec/view/PictureSpec.js"></script>
     <script src="spec/view/ErrorSpec.js"></script>
     <script src="spec/router/RouterSpec.js"></script>
+
+    <script>
+        LocalizePict.Collection.Pictures.storageKey += '_tests';
+
+        beforeAll(function() {
+            jasmine.getFixtures().fixturesPath = '..';
+            jasmine.getJSONFixtures().fixturesPath = 'data';
+
+            var indexContent = readFixtures('index.html');
+            $('body').after($(indexContent).filter('script[type="text/template"]'));
+        });
+
+        beforeEach(function() {
+            LocalizePict.Collection.Pictures.storageHandler.removeItem(LocalizePict.Collection.Pictures.storageKey);
+        });
+
+        afterAll(function() {
+            $('body ~ script[type="text/template"]').remove();
+        });
+
+        afterEach(function () {
+            // Remove all HTML inserted
+            $('main').empty();
+        });
+    </script>
 </head>
 
 <body>

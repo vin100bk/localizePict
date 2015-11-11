@@ -4,16 +4,14 @@
 describe('LocalizePict.Collection.Pictures', function () {
 
     beforeEach(function () {
-        spyOn(LocalizePict.View.Map.prototype, 'update').and.callThrough();
-        this.app = new LocalizePict.View.Map();
-        this.pictures = this.app.model;
+        this.pictures = new LocalizePict.Collection.Pictures();
     });
 
     it('An intiale collection should be empty', function () {
         expect(this.pictures.length).toEqual(0);
     });
 
-    describe('.set()', function() {
+    describe('.add()', function() {
 
         beforeEach(function () {
             this.picturesData = [
@@ -37,16 +35,60 @@ describe('LocalizePict.Collection.Pictures', function () {
                 })];
         });
 
-        it('Should set new pictures in the collection', function() {
+        it('Should add new pictures in the collection', function() {
             expect(this.pictures.length).toEqual(0);
-            this.pictures.set(this.picturesData);
+            this.pictures.add(this.picturesData);
             expect(this.pictures.length).toEqual(2);
         });
+    });
 
-        it('Should trigger an event "set"', function() {
-            spyOn(this.pictures, 'trigger');
-            this.pictures.set(this.picturesData);
-            expect(this.pictures.trigger).toHaveBeenCalledWith('set', jasmine.any(Array));
+    describe('.save()', function() {
+        it('Should call .sync()', function() {
+            spyOn(this.pictures, 'sync');
+            this.pictures.save();
+            expect(this.pictures.sync).toHaveBeenCalledWith('update', this.pictures.models);
+        });
+    });
+
+    describe('.sync()', function() {
+
+        beforeEach(function() {
+            this.picturesData = [
+                new LocalizePict.Model.Picture({
+                    pid: '1',
+                    icon: 'http://myicon1.jpg',
+                    picture: 'http://myoriginal1.jpg',
+                    location: {
+                        latitude: '40.713509',
+                        longitude: '-73.941141',
+                    }
+                }),
+                new LocalizePict.Model.Picture({
+                    pid: '2',
+                    icon: 'http://myicon2.jpg',
+                    picture: 'http://myoriginal2.jpg',
+                    location: {
+                        latitude: '40.713509',
+                        longitude: '-73.941141',
+                    }
+                })];
+        });
+
+        describe('read', function() {
+            it('Should not call reset without stored data', function() {
+                spyOn(this.pictures, 'reset');
+                this.pictures.sync('read');
+                expect(this.pictures.reset).not.toHaveBeenCalled();
+            });
+        });
+
+        it('Should save and get pictures', function() {
+            expect(this.pictures.length).toEqual(0);
+            this.pictures.sync('update', this.picturesData);
+            spyOn(this.pictures, 'reset').and.callThrough();
+            this.pictures.sync('read');
+            expect(this.pictures.reset).toHaveBeenCalledWith(JSON.parse(JSON.stringify(this.picturesData)));
+            expect(this.pictures.length).toEqual(2);
         });
     });
 });
