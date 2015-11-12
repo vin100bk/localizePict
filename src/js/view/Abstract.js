@@ -71,6 +71,7 @@ LocalizePict.View.Abstract = Backbone.View.extend({
      * @paran fnc: the action
      */
     closeOnClickOutside: function(elements, fnc) {
+        // Click outside
         $('#global-picture').click(function(event) {
             var isOutside = true;
             for(var i = 0; i < elements.length; i++) {
@@ -82,7 +83,14 @@ LocalizePict.View.Abstract = Backbone.View.extend({
             }
 
             event.stopPropagation();
-        })
+        });
+
+        // Press escape
+        $(document).keydown(function(e) {
+            if(e.which == 27 && fnc){
+                fnc();
+            }
+        });
     },
 
     /**
