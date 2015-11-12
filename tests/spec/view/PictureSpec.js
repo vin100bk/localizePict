@@ -43,14 +43,14 @@ describe('LocalizePict.View.Picture', function () {
         it('Should render the picture', function() {
             this.picture.render(3, this.pictures);
             expect($('#global-picture').length).toEqual(1);
-            expect($('#global-picture-img').length).toEqual(1);
-            expect($('#global-picture-list').length).toEqual(0);
-            expect($('#global-picture-img img:first-child').attr('src')).toEqual('http://myoriginal3.jpg');
+            expect($('#picture-img').length).toEqual(1);
+            expect($('#picture-list').length).toEqual(0);
+            expect($('#picture-img img:first-child').attr('src')).toEqual('http://myoriginal3.jpg');
         });
 
         it('Should show pictures which have the same location', function() {
             this.picture.render(1, this.pictures);
-            //expect($('#global-picture-list').length).toEqual(1);
+            //expect($('#picture-list').length).toEqual(1);
         });
 
         it('Should throw an error if the picture does not exist', function() {

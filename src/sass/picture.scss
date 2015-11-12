@@ -1,0 +1,40 @@
+#global-picture {
+
+	#picture-img {
+		position: fixed;
+		z-index: 10;
+		width: 90%;
+		height: 90vh;
+		top: 5%;
+		left: 5%;
+		text-align: center;
+
+		a {
+			img {
+				max-width: 90%;
+				max-height: 90%;
+			}
+		}
+	}
+
+	#picture-details {
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 15;
+		background-color: #eee;
+		padding: 10px;
+
+		ul {
+			margin: 0;
+
+			li {
+				line-height: 18px;
+			}
+
+			ul {
+				margin-left: 20px;
+			}
+		}
+	}
+}

@@ -58,10 +58,31 @@ LocalizePict.View.Abstract = Backbone.View.extend({
 
     /**
      * Show a global overlay
+     * @param fnc: action to perform when closing the overlay
      */
     showGlobalOverlay: function() {
         this.closeGlobalOverlay();
-        $('main').append('<div class="overlay" id="overlay-global"></div>');
+        $('main').append('<a class="overlay" id="overlay-global"></div>');
+    },
+
+    /**
+     * Make an action on clicking outside of elements
+     * @param elements: the elements
+     * @paran fnc: the action
+     */
+    closeOnClickOutside: function(elements, fnc) {
+        $('#global-picture').click(function(event) {
+            var isOutside = true;
+            for(var i = 0; i < elements.length; i++) {
+                isOutside &= ($(event.target).closest(elements[i]).length == 0);
+            }
+
+            if(isOutside && fnc) {
+                fnc();
+            }
+
+            event.stopPropagation();
+        })
     },
 
     /**

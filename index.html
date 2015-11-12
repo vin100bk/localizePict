@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="src/css/style.css"/>
     <link rel="stylesheet" href="src/css/error.css"/>
     <link rel="stylesheet" href="src/css/spinner.css"/>
+    <link rel="stylesheet" href="src/css/picture.css"/>
 </head>
 
 <body>
@@ -91,24 +92,58 @@
 <!-- Picture page -->
 <script id="tplPicturePage" type="text/template">
     <section id="global-picture">
-        <section id="global-picture-img">
-            <img src="<%= picture %>" alt="<%= (details.label) ? details.label : '' %>"
-                 title="<%= (details.label) ? details.label : '' %>"/>
+        <section id="picture-img"
+        <% if (pictures.length > 0) { %> class="picture-img-with-list"<% } %>>
+        <a href="<%= picture %>" target="_blank"><img src="<%= picture %>" alt="<%= (details.label) ? details.label : '' %>"
+                                      title="<%= (details.label) ? details.label : '' %>"/></a>
+    </section>
 
-            <% if (Object.keys(details).length > 0) { %>
-            <aside>
+    <% if (Object.keys(details).length > 0) { %>
+    <aside id="picture-details">
+        <ul>
+            <% if (details.provider) { %>
+            <% if (details.link) { %>
+            <li>Provider: <a href="<%= details.link %>" target="_blank"><strong><%= details.provider %></strong></a>
+            </li>
+            <% } else { %>
+            <li>Provider: <strong><%= details.provider %></strong></li>
+            <% } %>
+            <% } %>
+
+            <% if (details.album) { %>
+            <li>Album: <strong><%= details.album %></strong></li>
+            <% } %>
+
+            <% if (details.label) { %>
+            <li>Label: <strong><%= details.label %></strong></li>
+            <% } %>
+
+            <% if (details.location.label || details.location.city || details.location.country) { %>
+            <li>Location:
                 <ul>
-                    <% for(var key in details) { %>
-                    <li><% key %>: <strong><% details[key] %></strong></li>
+                    <% if (details.location.country) { %>
+                    <li>Country: <strong><%= details.location.country %></strong></li>
+                    <% } %>
+                    <% if (details.location.city) { %>
+                    <li>City: <strong><%= details.location.city %></strong></li>
+                    <% } %>
+                    <% if (details.location.label) { %>
+                    <li>Label: <strong><%= details.location.label %></strong></li>
                     <% } %>
                 </ul>
-            </aside>
+            </li>
             <% } %>
-        </section>
 
-        <% if (pictures.length > 0) { %>
-        <section id="global-picture-list"></section>
-        <% } %>
+            <% if (details.date) { %>
+            <li>Date: <strong><%= details.date %></strong></li>
+            <% } %>
+        </ul>
+    </aside>
+    <% } %>
+
+    <% if (pictures.length > 0) { %>
+    <section id="picture-list"></section>
+    <% } %>
     </section>
 </script>
 

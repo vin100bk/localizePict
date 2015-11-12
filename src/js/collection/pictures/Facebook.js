@@ -8,8 +8,6 @@ LocalizePict.Collection.PicturesModule.Facebook = {
      * @param context: application context
      */
     addFromFb: function (context) {
-        var self = this;
-
         // Global deferred
         var deferred = $.Deferred();
 
@@ -39,28 +37,28 @@ LocalizePict.Collection.PicturesModule.Facebook = {
                             /**
                              * Tagged pictures
                              */
-                            var deferredTagged = self.getPicturesFromFb('/me/photos/');
+                            var deferredTagged = this.getPicturesFromFb('/me/photos/');
                             deferredTagged.promise()
                                 .done(function (pictures) {
                                     if(pictures.length > 0) {
                                         // Add new picture in the collection
-                                        self.add(pictures);
+                                        this.add(pictures);
                                         deferred.notifyWith(context, ['<strong>' + pictures.length + '</strong> tagged picture(s) added']);
                                     }
-                                });
+                                }.bind(this));
 
                             /**
                              * Uploaded pictures
                              */
-                            var deferredUploaded = self.getPicturesFromFb('/me/photos/?type=uploaded');
+                            var deferredUploaded = this.getPicturesFromFb('/me/photos/?type=uploaded');
                             deferredUploaded.promise()
                                 .done(function (pictures) {
                                     if(pictures.length > 0) {
                                         // Add new picture in the collection
-                                        self.add(pictures);
+                                        this.add(pictures);
                                         deferred.notifyWith(context, ['<strong>' + pictures.length + '</strong> uploaded picture(s) added']);
                                     }
-                                });
+                                }.bind(this));
 
                             /**
                              * When both are resolved, we notify it
@@ -77,8 +75,8 @@ LocalizePict.Collection.PicturesModule.Facebook = {
                         } else {
                             FB.login({scope: 'user_photos'});
                         }
-                    });
-                });
+                    }.bind(this));
+                }.bind(this));
         }
         catch (e) {
             deferred.rejectWith(context, [e]);
@@ -92,13 +90,11 @@ LocalizePict.Collection.PicturesModule.Facebook = {
      * @param url
      */
     getPicturesFromFb: function (url) {
-        var self = this;
         var deferred = $.Deferred();
 
         try {
             FB.api(url, 'get', {
                 limit: 500,
-                date_format: 'U'
                 //fields: 'place,album,picture,images,place,name,link,created_time'
             }, function (json) {
                 // Check JSON
@@ -145,7 +141,7 @@ LocalizePict.Collection.PicturesModule.Facebook = {
                 // Manage pages
                 if (_.has(json, 'paging') && _.has(json.paging, 'next')) {
                     // We have a next page, let's fetch pictures from this next page
-                    self.getPicturesFromFb(json.paging.next).promise()
+                    this.getPicturesFromFb(json.paging.next).promise()
                         .then(function (picts) {
                             picts = picts.concat(pictures);
                             deferred.resolve(picts);
@@ -154,7 +150,7 @@ LocalizePict.Collection.PicturesModule.Facebook = {
                     // Last page: returns pictures
                     deferred.resolve(pictures);
                 }
-            });
+            }.bind(this));
         } catch (e) {
             deferred.reject(e);
         }
