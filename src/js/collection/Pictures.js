@@ -38,6 +38,22 @@ LocalizePict.Collection.Pictures = Backbone.Collection.extend(_.extend(
                     LocalizePict.Collection.Pictures.storageHandler.setItem(LocalizePict.Collection.Pictures.storageKey, JSON.stringify(model));
                     break;
             }
+        },
+
+        /**
+         * Order pictures by date descending
+         */
+        comparator: function (p1, p2) {
+            var d1 = p1.get('date');
+            var d2 = p2.get('date');
+
+            if (!d1) {
+                return 1;
+            } else if (!d2) {
+                return -1;
+            } else {
+                return (d1 == d2) ? 0 : (d1 < d2) ? 1 : -1;
+            }
         }
     }), {
     /** The storage key */
