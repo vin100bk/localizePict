@@ -54,6 +54,20 @@ LocalizePict.Collection.Pictures = Backbone.Collection.extend(_.extend(
             } else {
                 return (d1 == d2) ? 0 : (d1 < d2) ? 1 : -1;
             }
+        },
+
+        /**
+         * Get pictures specified by location
+         * @param latitude
+         * @param longitude
+         */
+        getByLocation: function (latitude, longitude) {
+            var pictures = _.filter(this.models, function (pict) {
+                var location = pict.get('location');
+                return location.latitude == latitude && location.longitude == longitude;
+            });
+
+            return new LocalizePict.Collection.Pictures(pictures);
         }
     }), {
     /** The storage key */

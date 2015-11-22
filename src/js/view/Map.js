@@ -5,9 +5,6 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
     /** The Google Map object */
     map: null,
 
-    /** Map: [coordinate] = {marker, [pictures]} */
-    coordinates: {},
-
     /** Events */
     events: {
         'click a#add-pict-fb': 'addFbPictures',
@@ -61,14 +58,13 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
      * Init the map
      */
     initMap: function () {
-        var mapOptions = {
-            center: {lat: -34.397, lng: 150.644},
-            zoom: 2
-        };
-
         var map = $('#map');
         if (map.length == 1) {
-            this.map = new google.maps.Map(map.get(0), mapOptions);
+            this.map = new google.maps.Map(map.get(0), {
+                center: {lat: -34.397, lng: 150.644},
+                zoom: 2,
+                keyboardShortcuts: false
+            });
         }
     },
 
@@ -88,12 +84,12 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
      * @param pictures: the pictures
      */
     populateMap: function (pictures) {
-        var self = this;
         pictures = pictures || this.model;
 
         /**
          * Create markers
          */
+        var coordinates = {};
         var markersToUpdate = {};
         pictures.each(function (picture) {
             var coordinatesKey = picture.get('location').latitude + '|' + picture.get('location').longitude;
@@ -101,29 +97,29 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
             // We notify this coordinate has to be updated
             markersToUpdate[coordinatesKey] = 1;
 
-            if (!_.has(self.coordinates, coordinatesKey)) {
+            if (!_.has(coordinates, coordinatesKey)) {
                 // New location
                 // Create the market with the longitude and latitude of the current picture
                 var marker = new google.maps.Marker({
                     position: new google.maps.LatLng(picture.get('location').latitude, picture.get('location').longitude),
-                    map: self.map
+                    map: this.map
                 });
 
-                self.coordinates[coordinatesKey] = {
+                coordinates[coordinatesKey] = {
                     marker: marker,
                     pictures: [picture]
                 };
             } else {
                 // A marker is already created for this location
-                self.coordinates[coordinatesKey]['pictures'].push(picture);
+                coordinates[coordinatesKey]['pictures'].push(picture);
             }
-        });
+        }.bind(this));
 
         /**
          * Attach event on markers
          */
         for (var coordinateKey in markersToUpdate) {
-            var infos = this.coordinates[coordinateKey];
+            var infos = coordinates[coordinateKey];
 
             // Events
             google.maps.event.addListener(infos.marker, 'mouseover', this.showPreview.bind(null, infos.pictures));

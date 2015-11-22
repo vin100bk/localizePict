@@ -81,8 +81,6 @@ LocalizePict.View.Abstract = Backbone.View.extend({
             if(isOutside && fnc) {
                 fnc();
             }
-
-            event.stopPropagation();
         });
 
         // Press escape

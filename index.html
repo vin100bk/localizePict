@@ -22,6 +22,7 @@
 <script src="//maps.googleapis.com/maps/api/js?key=AIzaSyDRdFfPvoXq61BUKdBT8yeJQEPsf9B6xDI"></script>
 <script src="bower_components/underscore/underscore-min.js"></script>
 <script src="bower_components/backbone/backbone-min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.slick/1.5.8/slick.min.js"></script>
 
 <script src="src/js/LocalizePict.js"></script>
 <script src="src/js/model/Picture.js"></script>
@@ -92,58 +93,72 @@
 <!-- Picture page -->
 <script id="tplPicturePage" type="text/template">
     <section id="global-picture">
-        <section id="picture-img"
-        <% if (pictures.length > 0) { %> class="picture-img-with-list"<% } %>>
-        <a href="<%= picture %>" target="_blank"><img src="<%= picture %>" alt="<%= (details.label) ? details.label : '' %>"
-                                      title="<%= (details.label) ? details.label : '' %>"/></a>
-    </section>
+        <section id="picture-img" class="<%= (pictures.length > 1) ? 'picture-img-with-list' : '' %>">
+            <a href="<%= picture %>" target="_blank">
+                <img src="<%= picture %>" alt=""/></a>
+        </section>
 
-    <% if (Object.keys(details).length > 0) { %>
-    <aside id="picture-details">
-        <ul>
-            <% if (details.provider) { %>
-            <% if (details.link) { %>
-            <li>Provider: <a href="<%= details.link %>" target="_blank"><strong><%= details.provider %></strong></a>
-            </li>
-            <% } else { %>
-            <li>Provider: <strong><%= details.provider %></strong></li>
-            <% } %>
-            <% } %>
+        <% if (prev) { %>
+        <a href="#picture/<%= prev %>" id="picture-prev"><i class="fa fa-chevron-left"></i></a>
+        <% } %>
+        <% if (next) { %>
+        <a href="#picture/<%= next %>" id="picture-next"><i class="fa fa-chevron-right"></i></a>
+        <% } %>
 
-            <% if (details.album) { %>
-            <li>Album: <strong><%= details.album %></strong></li>
-            <% } %>
+        <% if (Object.keys(details).length > 0) { %>
+        <aside id="picture-details">
+            <ul>
+                <% if (details.provider) { %>
+                <% if (details.link) { %>
+                <li>Provider: <a href="<%= details.link %>" target="_blank"><strong><%= details.provider %></strong></a>
+                </li>
+                <% } else { %>
+                <li>Provider: <strong><%= details.provider %></strong></li>
+                <% } %>
+                <% } %>
 
-            <% if (details.label) { %>
-            <li>Label: <strong><%= details.label %></strong></li>
-            <% } %>
+                <% if (details.album) { %>
+                <li>Album: <strong><%= details.album %></strong></li>
+                <% } %>
 
-            <% if (details.location.label || details.location.city || details.location.country) { %>
-            <li>Location:
-                <ul>
-                    <% if (details.location.country) { %>
-                    <li>Country: <strong><%= details.location.country %></strong></li>
-                    <% } %>
-                    <% if (details.location.city) { %>
-                    <li>City: <strong><%= details.location.city %></strong></li>
-                    <% } %>
-                    <% if (details.location.label) { %>
-                    <li>Label: <strong><%= details.location.label %></strong></li>
-                    <% } %>
-                </ul>
-            </li>
-            <% } %>
+                <% if (details.label) { %>
+                <li>Label: <strong><%= details.label %></strong></li>
+                <% } %>
 
-            <% if (details.date) { %>
-            <li>Date: <strong><%= details.date %></strong></li>
-            <% } %>
-        </ul>
-    </aside>
-    <% } %>
+                <% if (details.location.label || details.location.city || details.location.country) { %>
+                <li>Location:
+                    <ul>
+                        <% if (details.location.country) { %>
+                        <li>Country: <strong><%= details.location.country %></strong></li>
+                        <% } %>
+                        <% if (details.location.city) { %>
+                        <li>City: <strong><%= details.location.city %></strong></li>
+                        <% } %>
+                        <% if (details.location.label) { %>
+                        <li>Label: <strong><%= details.location.label %></strong></li>
+                        <% } %>
+                    </ul>
+                </li>
+                <% } %>
 
-    <% if (pictures.length > 0) { %>
-    <section id="picture-list"></section>
-    <% } %>
+                <% if (details.date) { %>
+                <li>Date: <strong><%= details.date %></strong></li>
+                <% } %>
+            </ul>
+        </aside>
+        <% } %>
+
+        <% if (pictures.length > 1) { %>
+        <section id="picture-list">
+            <ul>
+                <% for(var i = 0; i < pictures.length; i++) { var pict = pictures.at(i); %>
+                <li class="picture-list-item">
+                    <a href="#picture/<%= pict.get('id') %>"><img src="<%= pict.get('icon') %>" alt=""/></a>
+                </li>
+                <% } %>
+            </ul>
+        </section>
+        <% } %>
     </section>
 </script>
 

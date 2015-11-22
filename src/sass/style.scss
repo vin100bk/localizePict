@@ -23,9 +23,8 @@
 	img {
 		display: block;
 		float: left;
-		//16/10 format
-		width: 100px;
-		height: 63px;
+		width: $iconWidth;
+		height: $iconHeight;
 	}
 }
 

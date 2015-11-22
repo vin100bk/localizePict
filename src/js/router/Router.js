@@ -47,8 +47,12 @@ LocalizePict.Router.Router = Backbone.Router.extend({
             var pictureView = new LocalizePict.View.Picture({router: this});
             pictureView.render(pictureId, this.app.model);
         } catch(e) {
-            // Picture not found
-            this.default(pictureId);
+            if('name' in e && e.name == 'PictureException') {
+                // Picture not found
+                this.default(pictureId);
+            } else {
+                throw e;
+            }
         }
 
     },

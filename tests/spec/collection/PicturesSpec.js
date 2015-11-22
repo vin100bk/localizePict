@@ -121,4 +121,46 @@ describe('LocalizePict.Collection.Pictures', function () {
             expect(this.pictures.at(0).get('pid')).toEqual('2');
         });
     });
+
+    describe('.getByLocation()', function() {
+        beforeEach(function () {
+            this.pictures = new LocalizePict.Collection.Pictures([
+                new LocalizePict.Model.Picture({
+                    pid: '1',
+                    icon: 'http://myicon1.jpg',
+                    picture: 'http://myoriginal1.jpg',
+                    location: {
+                        latitude: '40.713509',
+                        longitude: '-73.941141',
+                    }
+                }),
+                new LocalizePict.Model.Picture({
+                    pid: '2',
+                    icon: 'http://myicon2.jpg',
+                    picture: 'http://myoriginal2.jpg',
+                    location: {
+                        latitude: '40.713509',
+                        longitude: '-73.941141',
+                    }
+                }),
+                new LocalizePict.Model.Picture({
+                    pid: '3',
+                    icon: 'http://myicon3.jpg',
+                    picture: 'http://myoriginal3.jpg',
+                    location: {
+                        latitude: '40.713509',
+                        longitude: '-73.941142',
+                    }
+                })
+            ]);
+        });
+
+        it('Should return pictures with the same location', function() {
+            var pictures = this.pictures.getByLocation('40.713509', '-73.941141');
+            expect(pictures).toEqual(jasmine.any(LocalizePict.Collection.Pictures));
+            expect(pictures.length).toEqual(2);
+            expect(pictures.get('1').get('icon')).toEqual('http://myicon1.jpg');
+            expect(pictures.get('2').get('icon')).toEqual('http://myicon2.jpg');
+        });
+    });
 });
