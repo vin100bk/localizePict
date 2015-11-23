@@ -10,6 +10,7 @@ describe('LocalizePict.View.Map', function () {
         this.picturesData = [
             new LocalizePict.Model.Picture({
                 pid: '1',
+                provider: 'fb',
                 icon: 'http://myicon1.jpg',
                 picture: 'http://myoriginal1.jpg',
                 location: {
@@ -19,6 +20,7 @@ describe('LocalizePict.View.Map', function () {
             }),
             new LocalizePict.Model.Picture({
                 pid: '2',
+                provider: 'fb',
                 icon: 'http://myicon2.jpg',
                 picture: 'http://myoriginal2.jpg',
                 location: {
@@ -28,6 +30,7 @@ describe('LocalizePict.View.Map', function () {
             }),
             new LocalizePict.Model.Picture({
                 pid: '3',
+                provider: 'fb',
                 icon: 'http://myicon3.jpg',
                 picture: 'http://myoriginal3.jpg',
                 location: {
@@ -47,6 +50,7 @@ describe('LocalizePict.View.Map', function () {
             }),
             new LocalizePict.Model.Picture({
                 pid: '5',
+                provider: 'fb',
                 icon: 'http://myicon5.jpg',
                 picture: 'http://myoriginal5.jpg',
                 location: {
@@ -124,8 +128,7 @@ describe('LocalizePict.View.Map', function () {
             spyOn(this.app, 'hidePreview');
             spyOn(this.app, 'goToPicture');
 
-            // Clean old recorded coordinates
-            this.app.coordinates = {};
+            this.app.render();
             this.app.populateMap(pictures);
         });
 
@@ -190,7 +193,7 @@ describe('LocalizePict.View.Map', function () {
         it('Should navigate to the first picture page', function() {
             spyOn(this.app.router, 'navigate');
             this.app.goToPicture(this.picturesData);
-            expect(this.app.router.navigate).toHaveBeenCalledWith('picture/1', jasmine.any(Object));
+            expect(this.app.router.navigate).toHaveBeenCalledWith('picture/fb_1', jasmine.any(Object));
         });
     });
 
@@ -349,6 +352,32 @@ describe('LocalizePict.View.Map', function () {
         it('Should remove the notices overlay', function() {
             this.app.removeOverlayNotices();
             expect($('#overlay-notices').length).toEqual(0);
+        });
+    });
+
+    describe('.removePicts()', function() {
+        beforeEach(function () {
+            var pictures = new LocalizePict.Collection.Pictures(this.picturesData);
+
+            this.app.render();
+            this.app.populateMap(pictures);
+            this.app.showProviderOptions($('#add-pict-fb'));
+
+            spyOn(this.app.model, 'removeProvider');
+            this.element = $('.remove-picts').first();
+            this.element.trigger('click');
+        });
+
+        it('Should call .removeProvider() on the model', function() {
+            expect(this.app.model.removeProvider).toHaveBeenCalledWith('fb');
+        });
+
+        it('Should hide provider options', function() {
+            expect(this.element.parent().hasClass('hidden')).toBe(true);
+        });
+
+        it('Should make the add button as inactive', function() {
+            expect(this.element.parent().prev().hasClass('active')).toBe(false);
         });
     });
 });

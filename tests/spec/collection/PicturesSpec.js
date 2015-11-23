@@ -163,4 +163,48 @@ describe('LocalizePict.Collection.Pictures', function () {
             expect(pictures.get('2').get('icon')).toEqual('http://myicon2.jpg');
         });
     });
+
+    describe('.removeProvider()', function() {
+        beforeEach(function() {
+            this.pictures = new LocalizePict.Collection.Pictures([
+                new LocalizePict.Model.Picture({
+                    pid: '1',
+                    provider: 'fb',
+                    icon: 'http://myicon1.jpg',
+                    picture: 'http://myoriginal1.jpg',
+                    location: {
+                        latitude: '40.713509',
+                        longitude: '-73.941141',
+                    }
+                }),
+                new LocalizePict.Model.Picture({
+                    pid: '2',
+                    provider: 'fb',
+                    icon: 'http://myicon2.jpg',
+                    picture: 'http://myoriginal2.jpg',
+                    location: {
+                        latitude: '40.713509',
+                        longitude: '-73.941141',
+                    }
+                }),
+                new LocalizePict.Model.Picture({
+                    pid: '3',
+                    provider: 'other',
+                    icon: 'http://myicon3.jpg',
+                    picture: 'http://myoriginal3.jpg',
+                    location: {
+                        latitude: '40.713509',
+                        longitude: '-73.941142',
+                    }
+                })
+            ]);
+        });
+
+        it('Should remove pictures of a provider from the collection', function() {
+            this.pictures.removeProvider('fb');
+            expect(this.pictures.length).toEqual(1);
+            expect(this.pictures.get('fb_1')).toBeUndefined();
+            expect(this.pictures.get('other_3').get('icon')).toEqual('http://myicon3.jpg');
+        });
+    });
 });

@@ -68,6 +68,15 @@ LocalizePict.Collection.Pictures = Backbone.Collection.extend(_.extend(
             });
 
             return new LocalizePict.Collection.Pictures(pictures);
+        },
+
+        /**
+         * Remove pictures of a provider
+         * @param provider: the provider name
+         */
+        removeProvider: function(provider) {
+            var pictures = this.where({provider: provider});
+            this.remove(pictures);
         }
     }), {
     /** The storage key */

@@ -8,8 +8,12 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
     /** Events */
     events: {
         'click a#add-pict-fb': 'addFbPictures',
-        'click a#notices-close': 'closeNotices'
+        'click a#notices-close': 'closeNotices',
+        'click a.remove-picts': 'removePicts'
     },
+
+    /** Contains all markers */
+    coordinates: {},
 
     /**
      * Initialize the application
@@ -23,7 +27,7 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
         this.model.on('update', this.update, this);
         this.model.on('reset', this.populateMap, this);
 
-        _.bindAll(this, 'addFbPictures', 'closeNotices', 'showPreview', 'goToPicture');
+        _.bindAll(this, 'addFbPictures', 'closeNotices', 'removePicts', 'showPreview', 'goToPicture');
     },
 
     /**
@@ -87,9 +91,16 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
         pictures = pictures || this.model;
 
         /**
+         * Delete previous markers
+         */
+        for(coordinateKey in this.coordinates) {
+            this.coordinates[coordinateKey].marker.setMap(null);
+        }
+        this.coordinates = {};
+
+        /**
          * Create markers
          */
-        var coordinates = {};
         var markersToUpdate = {};
         pictures.each(function (picture) {
             var coordinatesKey = picture.get('location').latitude + '|' + picture.get('location').longitude;
@@ -97,7 +108,7 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
             // We notify this coordinate has to be updated
             markersToUpdate[coordinatesKey] = 1;
 
-            if (!_.has(coordinates, coordinatesKey)) {
+            if (!_.has(this.coordinates, coordinatesKey)) {
                 // New location
                 // Create the market with the longitude and latitude of the current picture
                 var marker = new google.maps.Marker({
@@ -105,13 +116,13 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
                     map: this.map
                 });
 
-                coordinates[coordinatesKey] = {
+                this.coordinates[coordinatesKey] = {
                     marker: marker,
                     pictures: [picture]
                 };
             } else {
                 // A marker is already created for this location
-                coordinates[coordinatesKey]['pictures'].push(picture);
+                this.coordinates[coordinatesKey]['pictures'].push(picture);
             }
         }.bind(this));
 
@@ -119,7 +130,7 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
          * Attach event on markers
          */
         for (var coordinateKey in markersToUpdate) {
-            var infos = coordinates[coordinateKey];
+            var infos = this.coordinates[coordinateKey];
 
             // Events
             google.maps.event.addListener(infos.marker, 'mouseover', this.showPreview.bind(null, infos.pictures));
@@ -272,6 +283,18 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
      */
     removeOverlayNotices: function () {
         $('#overlay-notices').remove();
+    },
+
+    /**
+     * Remove pictures
+     * @param e
+     */
+    removePicts: function(e) {
+        e.preventDefault();
+        var element = $(e.currentTarget);
+        this.model.removeProvider(element.data('provider'));
+        element.parent().addClass('hidden');
+        element.parent().prev().removeClass('active');
     }
 
 });

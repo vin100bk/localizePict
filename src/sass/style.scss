@@ -63,6 +63,8 @@
 			margin: 5px 10px;
 			padding: 3px 5px;
 			float: right;
+			white-space: nowrap;
+			overflow: hidden;
 
 			// Provider logo
 			i {
@@ -75,8 +77,6 @@
 
 			&.active {
 				width: 20px;
-				white-space: nowrap;
-				overflow: hidden;
 			}
 		}
 
