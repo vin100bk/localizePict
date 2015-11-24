@@ -383,8 +383,18 @@ describe('LocalizePict.View.Map', function () {
             this.app.populateMap(pictures);
             this.app.showProviderOptions($('#add-picts-fb'));
 
-            spyOn(this.app, 'removeProvider');
-            this.element = $('.remove-picts').first();
+            spyOn(this.app, 'removePicts');
+            spyOn(this.app, 'addPictures');
+            this.element = $('.refresh-picts').first();
+            this.element.trigger('click');
+        });
+
+        it('Should call .removePicts()', function() {
+            expect(this.app.removePicts).toHaveBeenCalled();
+        });
+
+        it('Should call .addPictures()', function() {
+            expect(this.app.addPictures).toHaveBeenCalled();
         });
     });
 });

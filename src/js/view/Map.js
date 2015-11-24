@@ -311,8 +311,19 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
         this.addNotice('Picture(s) from ' + this.providers[provider] + ' removed');
     },
 
-    refreshPicts:function() {
+    /**
+     * Refresh pictures
+     * @param e: click event (if null, use the element parameter)
+     * @param element: the element itself (optional)
+     */
+    refreshPicts:function(e, element) {
+        if(e) {
+            e.preventDefault();
+            element = $(e.currentTarget);
+        }
 
+        this.removePicts(null, element.siblings('.remove-picts'));
+        this.addPictures(null, element.closest('li').find('.add-picts'));
     }
 
 });
