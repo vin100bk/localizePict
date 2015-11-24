@@ -101,5 +101,18 @@ LocalizePict.View.Abstract = Backbone.View.extend({
      */
     closeGlobalOverlay: function() {
         $('#overlay-global').detach();
+    },
+
+    /**
+     * Check the provider
+     * @param providerName: the provider name
+     */
+    checkProvider: function(providerName) {
+        if(! (providerName in this.providers)) {
+            throw {
+                name: 'LocalizePict.View.Map.Exception',
+                message: 'The provider "' + providerName + '" does not exist.'
+            }
+        }
     }
 });

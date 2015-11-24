@@ -7,6 +7,19 @@ LocalizePict.Collection.Pictures = Backbone.Collection.extend(_.extend(
         model: LocalizePict.Model.Picture,
 
         /**
+         * Get the add function associated to a provider
+         * @param provider: the provider name
+         * @returns the add function associated to a provider
+         */
+        getAddFunction: function(provider) {
+            var functions = {
+                'fb': this.addFromFb
+            };
+
+            return functions[provider].bind(this);
+        },
+
+        /**
          * @Override
          */
         add: function (models, options) {

@@ -8,19 +8,19 @@ describe('LocalizePict.View.Abstract', function () {
         this.app = router.app;
     });
 
-    describe('.template()', function() {
-        it('Should return the template associated to the ID', function() {
+    describe('.template()', function () {
+        it('Should return the template associated to the ID', function () {
             expect(this.app.template('tplSpinner')().trim()).toEqual('<div class="spinner-loader spinner"></div>');
         });
     });
 
-    describe('.showError()', function() {
-        beforeEach(function() {
+    describe('.showError()', function () {
+        beforeEach(function () {
             spyOn(this.app, 'closeError');
             this.app.showError('Test');
         });
 
-        it('Should display an error message', function() {
+        it('Should display an error message', function () {
             expect($('#error').length).toEqual(1);
             expect($('#error p:first-child').text()).toEqual('Test');
             expect($('#error .button-submit').length).toEqual(1);
@@ -29,37 +29,52 @@ describe('LocalizePict.View.Abstract', function () {
         });
     });
 
-    describe('.closeError', function() {
-        beforeEach(function() {
+    describe('.closeError', function () {
+        beforeEach(function () {
             this.app.showError('Test');
             this.app.closeError();
         });
 
-        it('Should remove the overlay and the error message', function() {
+        it('Should remove the overlay and the error message', function () {
             expect($('#overlay-global').length).toEqual(0);
             expect($('#error').length).toEqual(0);
         });
     });
 
-    describe('.showGlobalOverlay()', function() {
-        beforeEach(function() {
+    describe('.showGlobalOverlay()', function () {
+        beforeEach(function () {
             this.app.showGlobalOverlay();
         });
 
-        it('Should add an overlay', function() {
+        it('Should add an overlay', function () {
             expect($('#overlay-global').length).toEqual(1);
         });
     });
 
-    describe('.closeGlobalOverlay()', function() {
-        beforeEach(function() {
+    describe('.closeGlobalOverlay()', function () {
+        beforeEach(function () {
             this.app.showGlobalOverlay();
         });
 
-        it('Should remove the overlay', function() {
+        it('Should remove the overlay', function () {
             expect($('#overlay-global').length).toEqual(1);
             this.app.closeGlobalOverlay();
             expect($('#overlay-global').length).toEqual(0);
         });
+    });
+
+    describe('.checkProvider()', function () {
+
+        it('Should not throw an error with a valid provider', function () {
+            expect(function () {
+                this.app.checkProvider('fb');
+            }.bind(this)).not.toThrow();
+        });
+        it('SHould throw an error with an unknown provider', function() {
+            expect(function () {
+                this.app.checkProvider('test');
+            }.bind(this)).toThrow();
+        });
+
     });
 });

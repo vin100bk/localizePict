@@ -4,7 +4,7 @@
 describe('LocalizePict.View.Map', function () {
 
     beforeEach(function () {
-        spyOn(LocalizePict.View.Map.prototype, 'addFbPictures').and.callThrough();
+        spyOn(LocalizePict.View.Map.prototype, 'addPictures').and.callThrough();
         spyOn(LocalizePict.View.Map.prototype, 'closeNotices').and.callThrough();
 
         this.picturesData = [
@@ -200,7 +200,7 @@ describe('LocalizePict.View.Map', function () {
     describe('.showProviderOptions()', function() {
         beforeEach(function() {
             this.app.render();
-            this.elemt = $('#add-pict-fb');
+            this.elemt = $('#add-picts-fb');
         });
 
         it('Should create the provider options on the first call', function() {
@@ -222,15 +222,15 @@ describe('LocalizePict.View.Map', function () {
         it('Should set button as active if there is data for a provider', function() {
             this.app.render();
             this.app.initProviderButtons();
-            expect($('#add-pict-fb').hasClass('active')).toBe(false);
+            expect($('#add-picts-fb').hasClass('active')).toBe(false);
             this.app.model.sync('update', this.picturesData);
             this.app.render();
             this.app.initProviderButtons();
-            expect($('#add-pict-fb').hasClass('active')).toBe(true);
+            expect($('#add-picts-fb').hasClass('active')).toBe(true);
         });
     });
 
-    describe('.addFbPictures()', function () {
+    describe('.addPictures()', function () {
         beforeEach(function () {
             this.deferred = $.Deferred();
 
@@ -245,7 +245,7 @@ describe('LocalizePict.View.Map', function () {
             spyOn(this.app, 'showError');
 
             this.app.render();
-            $('#add-pict-fb').trigger('click');
+            $('#add-picts-fb').trigger('click');
         });
 
         it('Should initiate notices', function() {
@@ -266,7 +266,7 @@ describe('LocalizePict.View.Map', function () {
             this.deferred.resolveWith(this.app, ['test']);
             expect(this.app.removeOverlayNotices).toHaveBeenCalled();
             expect(this.app.addNotice).toHaveBeenCalledWith('test');
-            expect($('#add-pict-fb').hasClass('active')).toBe(true);
+            expect($('#add-picts-fb').hasClass('active')).toBe(true);
         });
 
         it('Should show an error when the process fail', function () {
@@ -278,8 +278,8 @@ describe('LocalizePict.View.Map', function () {
         it('Should show provider options if pictures are already added', function() {
             this.deferred.resolveWith(this.app, ['test']);
             spyOn(this.app, 'showProviderOptions');
-            $('#add-pict-fb').trigger('click');
-            expect(this.app.showProviderOptions).toHaveBeenCalledWith($('#add-pict-fb'));
+            $('#add-picts-fb').trigger('click');
+            expect(this.app.showProviderOptions).toHaveBeenCalledWith($('#add-picts-fb'));
         });
     });
 
@@ -350,35 +350,41 @@ describe('LocalizePict.View.Map', function () {
 
             this.app.render();
             this.app.populateMap(pictures);
-            this.app.showProviderOptions($('#add-pict-fb'));
+            this.app.showProviderOptions($('#add-picts-fb'));
 
             spyOn(this.app.model, 'removeProvider');
+            spyOn(this.app, 'checkProvider');
             this.element = $('.remove-picts').first();
+            this.element.trigger('click');
         });
 
         it('Should call .removeProvider() on the model', function() {
-            this.element.trigger('click');
             expect(this.app.model.removeProvider).toHaveBeenCalledWith('fb');
         });
 
         it('Should hide provider options', function() {
-            this.element.trigger('click');
             expect(this.element.parent().hasClass('hidden')).toBe(true);
         });
 
         it('Should make the add button as inactive', function() {
-            this.element.trigger('click');
             expect(this.element.parent().prev().hasClass('active')).toBe(false);
         });
 
-        it('Should throw an error with an unknown provider', function() {
-            spyOn(this.app, 'removePicts').and.callThrough();
-            expect(function() {
-                this.app.removePicts({
-                    preventDefault: function() {},
-                    currentTarget: '<a href="#" class="remove-picts" data-provider="test">Remove</a>'
-                });
-            }).toThrow();
+        it('Should call .checkProvider()', function() {
+            expect(this.app.checkProvider).toHaveBeenCalledWith('fb');
+        });
+    });
+
+    describe('.refreshPicts()', function() {
+        beforeEach(function() {
+            var pictures = new LocalizePict.Collection.Pictures(this.picturesData);
+
+            this.app.render();
+            this.app.populateMap(pictures);
+            this.app.showProviderOptions($('#add-picts-fb'));
+
+            spyOn(this.app, 'removeProvider');
+            this.element = $('.remove-picts').first();
         });
     });
 });

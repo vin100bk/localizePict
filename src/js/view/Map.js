@@ -7,9 +7,9 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
 
     /** Events */
     events: {
-        'click a#add-pict-fb': 'addFbPictures',
-        'click a#notices-close': 'closeNotices',
-        'click a.remove-picts': 'removePicts'
+        'click a.add-picts': 'addPictures',
+        'click a.remove-picts': 'removePicts',
+        'click a.refresh-picts': 'refreshPicts'
     },
 
     /** Notices timer */
@@ -30,7 +30,7 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
         this.model.on('update', this.update, this);
         this.model.on('reset', this.populateMap, this);
 
-        _.bindAll(this, 'addFbPictures', 'closeNotices', 'removePicts', 'showPreview', 'goToPicture');
+        _.bindAll(this, 'addPictures', 'closeNotices', 'removePicts', 'showPreview', 'goToPicture');
     },
 
     /**
@@ -200,30 +200,35 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
     initProviderButtons: function () {
         if (this.model.findWhere({provider: 'fb'})) {
             // Facebook
-            $('#add-pict-fb').addClass('active');
+            $('#add-picts-fb').addClass('active');
         }
     },
 
     /**
-     * Callback when a user want to add Facebook pictures
+     * Add pictures
+     * @param e: click event (if null, use the element parameter)
+     * @param element: the element itself (optional)
      */
-    addFbPictures: function (e) {
-        e.preventDefault();
-
-        // Clicked element
-        var element = $(e.currentTarget);
+    addPictures: function (e, element) {
+        if(e) {
+            e.preventDefault();
+            element = $(e.currentTarget);
+        }
 
         if (element.hasClass('active')) {
             // Pictures already added
             this.showProviderOptions(element);
         } else {
+            var provider = element.data('provider');
+            this.checkProvider(provider);
+
             // Remove possible previous notices
             this.closeNotices();
 
             // Add an overlay over the notices
             this.addOverlayNotices();
 
-            this.model.addFromFb(this)
+            this.model.getAddFunction(provider)(this)
                 .progress(function (message) {
                     this.addNotice(message);
                 })
@@ -288,24 +293,26 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
 
     /**
      * Remove pictures
-     * @param e
+     * @param e: click event (if null, use the element parameter)
+     * @param element: the element itself (optional)
      */
-    removePicts: function(e) {
-        e.preventDefault();
-        var element = $(e.currentTarget);
-
-        if(! (element.data('provider') in this.providers)) {
-            // The provider does not exist
-            throw {
-                name: 'LocalizePict.View.Map.Exception',
-                message: 'The provider "' + element.data('provider') + '" does not exist.'
-            }
+    removePicts: function(e, element) {
+        if(e) {
+            e.preventDefault();
+            element = $(e.currentTarget);
         }
 
-        this.model.removeProvider(element.data('provider'));
+        var provider = element.data('provider');
+        this.checkProvider(provider);
+
+        this.model.removeProvider(provider);
         element.parent().addClass('hidden');
         element.parent().prev().removeClass('active');
-        this.addNotice('Picture(s) from ' + this.providers[element.data('provider')] + ' removed');
+        this.addNotice('Picture(s) from ' + this.providers[provider] + ' removed');
+    },
+
+    refreshPicts:function() {
+
     }
 
 });
