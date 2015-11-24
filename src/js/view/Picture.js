@@ -47,16 +47,11 @@ LocalizePict.View.Picture = LocalizePict.View.Abstract.extend({
             }
         }
 
-        // Providers translation
-        var providers = {
-            fb: 'Facebook'
-        };
-
         // Render the picture
         $('main').append(this.template('tplPicturePage')({
             picture: picture.get('picture'),
             details: {
-                provider: providers[picture.get('provider')],
+                provider: this.providers[picture.get('provider')],
                 album: picture.get('album'),
                 location: picture.get('location'),
                 label: picture.get('label'),

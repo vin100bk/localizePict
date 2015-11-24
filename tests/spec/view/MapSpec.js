@@ -240,7 +240,6 @@ describe('LocalizePict.View.Map', function () {
             spyOn(this.app.model, 'addFromFb').and.returnValue(this.deferred);
             spyOn(this.app, 'addNotice');
             spyOn(this.app, 'removeOverlayNotices');
-            spyOn(this.app, 'addCloseButtonToNotices');
             spyOn(this.app, 'closeNotices');
             spyOn(this.app, 'addOverlayNotices');
             spyOn(this.app, 'showError');
@@ -267,7 +266,6 @@ describe('LocalizePict.View.Map', function () {
             this.deferred.resolveWith(this.app, ['test']);
             expect(this.app.removeOverlayNotices).toHaveBeenCalled();
             expect(this.app.addNotice).toHaveBeenCalledWith('test');
-            expect(this.app.addCloseButtonToNotices).toHaveBeenCalled();
             expect($('#add-pict-fb').hasClass('active')).toBe(true);
         });
 
@@ -297,23 +295,14 @@ describe('LocalizePict.View.Map', function () {
             this.app.addNotice('Notice2');
             expect($('#notices').children().length).toEqual(2);
         });
-    });
 
-    describe('.addCloseButtonToNotices()', function() {
-        beforeEach(function() {
-            this.app.render();
-        });
-
-        it('Should add the button', function() {
-            expect($('#notices-close').length).toEqual(0);
-            this.app.addCloseButtonToNotices();
-            expect($('#notices-close').length).toEqual(1);
-        });
-
-        it('Should call .closeNotices() when clicking onto', function() {
-            this.app.addCloseButtonToNotices();
-            $('#notices-close').trigger('click');
-            expect(LocalizePict.View.Map.prototype.closeNotices).toHaveBeenCalled();
+        it('Should close notices after a timeout', function() {
+            jasmine.clock().install();
+            spyOn(this.app, 'closeNotices');
+            this.app.addNotice('Notice1');
+            jasmine.clock().tick(4000);
+            expect(this.app.closeNotices).toHaveBeenCalled();
+            jasmine.clock().uninstall();
         });
     });
 
@@ -365,19 +354,31 @@ describe('LocalizePict.View.Map', function () {
 
             spyOn(this.app.model, 'removeProvider');
             this.element = $('.remove-picts').first();
-            this.element.trigger('click');
         });
 
         it('Should call .removeProvider() on the model', function() {
+            this.element.trigger('click');
             expect(this.app.model.removeProvider).toHaveBeenCalledWith('fb');
         });
 
         it('Should hide provider options', function() {
+            this.element.trigger('click');
             expect(this.element.parent().hasClass('hidden')).toBe(true);
         });
 
         it('Should make the add button as inactive', function() {
+            this.element.trigger('click');
             expect(this.element.parent().prev().hasClass('active')).toBe(false);
+        });
+
+        it('Should throw an error with an unknown provider', function() {
+            spyOn(this.app, 'removePicts').and.callThrough();
+            expect(function() {
+                this.app.removePicts({
+                    preventDefault: function() {},
+                    currentTarget: '<a href="#" class="remove-picts" data-provider="test">Remove</a>'
+                });
+            }).toThrow();
         });
     });
 });

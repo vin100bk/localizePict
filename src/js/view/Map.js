@@ -12,6 +12,9 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
         'click a.remove-picts': 'removePicts'
     },
 
+    /** Notices timer */
+    noticesTimer: null,
+
     /** Contains all markers */
     coordinates: {},
 
@@ -227,7 +230,6 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
                 .done(function (message) {
                     this.removeOverlayNotices();
                     this.addNotice(message);
-                    this.addCloseButtonToNotices();
                     element.addClass('active active-animated');
                 })
                 .fail(function (e) {
@@ -248,13 +250,12 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
         }
 
         el.append('<p>' + text + '</p>');
-    },
 
-    /**
-     * Add a close button for notices
-     */
-    addCloseButtonToNotices: function () {
-        $('#notices').append('<p class="center"><a href="#" id="notices-close">Ok</a></p>');
+        // Timer
+        if(this.noticesTimer) {
+            clearTimeout(this.noticesTimer);
+        }
+        this.noticesTimer = setTimeout(this.closeNotices, 3000);
     },
 
     /**
@@ -292,9 +293,19 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
     removePicts: function(e) {
         e.preventDefault();
         var element = $(e.currentTarget);
+
+        if(! (element.data('provider') in this.providers)) {
+            // The provider does not exist
+            throw {
+                name: 'LocalizePict.View.Map.Exception',
+                message: 'The provider "' + element.data('provider') + '" does not exist.'
+            }
+        }
+
         this.model.removeProvider(element.data('provider'));
         element.parent().addClass('hidden');
         element.parent().prev().removeClass('active');
+        this.addNotice('Picture(s) from ' + this.providers[element.data('provider')] + ' removed');
     }
 
 });

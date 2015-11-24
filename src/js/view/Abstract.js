@@ -7,6 +7,11 @@ LocalizePict.View.Abstract = Backbone.View.extend({
     /** The router */
     router: null,
 
+    /** Providers list */
+    providers: {
+        'fb': 'Facebook'
+    },
+
     /**
      * Initialize the application
      * @param options
