@@ -67,8 +67,9 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
     initMap: function () {
         var map = $('#map');
         if (map.length == 1) {
+            // Build the map centered on Toulouse (because Toulouse is the center of the world :))
             this.map = new google.maps.Map(map.get(0), {
-                center: {lat: -34.397, lng: 150.644},
+                center: {lat: 43.6045, lng: 1.4440},
                 zoom: 2,
                 keyboardShortcuts: false
             });
