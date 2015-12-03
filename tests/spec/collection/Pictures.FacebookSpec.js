@@ -42,19 +42,16 @@ describe('LocalizePict.Collection.PicturesModule.Facebook', function () {
              * Mocks of Deferred
              */
             var promiseGetScript = $.Deferred().promise();
-            this.overallDeferred = $.Deferred();
-            this.deferredTagged = $.Deferred();
-            this.deferredUploaded = $.Deferred();
+            this.deferred = $.Deferred();
 
             /**
              * Spies
              */
             spyOn(promiseGetScript, 'done').and.callThrough();
             spyOn($, 'getScript').and.returnValue(promiseGetScript);
-            spyOn(this.pictures, 'add').and.callThrough();
-            spyOn(this.pictures, 'getPicturesFromFb').and.returnValues(this.deferredTagged, this.deferredUploaded);
-            spyOn(this.overallDeferred, 'resolveWith').and.returnValue(this.overallDeferred);
-            spyOn($, 'Deferred').and.returnValue(this.overallDeferred);
+            spyOn($, 'Deferred').and.returnValue(this.deferred);
+            spyOn(this.pictures, 'fetchPicturesFromFb');
+            spyOn(this.deferred, 'rejectWith');
 
             /**
              * Execute the function
@@ -81,18 +78,35 @@ describe('LocalizePict.Collection.PicturesModule.Facebook', function () {
             expect($.getScript.calls.count()).toEqual(1);
         });
 
-        it('Should throw an error with a no compliant response', function () {
-            // Create a mock response object
-            var response = jasmine.createSpy('response');
+        describe('With a no compliant response', function() {
+            it('Should reject the process', function () {
+                // Create a mock response object
+                var response = jasmine.createSpy('response');
 
-            // Process the callback of FB.getScript()
-            var getLoginStatusCallback = FB.getLoginStatus.calls.argsFor(0)[0];
+                // Process the callback of FB.getScript()
+                var getLoginStatusCallback = FB.getLoginStatus.calls.argsFor(0)[0];
+                getLoginStatusCallback(response);
 
-            expect(getLoginStatusCallback.bind(null, response)).toThrow();
+                expect(this.deferred.rejectWith).toHaveBeenCalled();
+            });
         });
 
-        describe('When connected', function() {
-            it('Should call FB.login()', function () {
+        describe('When not authorized', function() {
+            it('Should reject the process', function () {
+                // Create a mock response object
+                var response = jasmine.createSpy('response');
+                response.status = 'not_authorized';
+
+                // Process the callback of FB.getScript()
+                var getLoginStatusCallback = FB.getLoginStatus.calls.argsFor(0)[0];
+                getLoginStatusCallback(response);
+
+                expect(this.deferred.rejectWith).toHaveBeenCalled();
+            });
+        });
+
+        describe('When not connected', function() {
+            beforeEach(function() {
                 // Create a mock response object
                 var response = jasmine.createSpy('response');
                 response.status = 'annymous';
@@ -100,14 +114,39 @@ describe('LocalizePict.Collection.PicturesModule.Facebook', function () {
                 // Process the callback of FB.getScript()
                 var getLoginStatusCallback = FB.getLoginStatus.calls.argsFor(0)[0];
                 getLoginStatusCallback(response);
+            });
 
+            it('Should call FB.login()', function () {
                 expect(FB.login).toHaveBeenCalled();
+            });
+
+            it('Should call .fetchPicturesFromFb() if the login is successful', function() {
+                // Create a mock response object
+                var response = jasmine.createSpy('response');
+                response.authResponse = true;
+
+                // Process the callback of FB.login()
+                var getLoginStatusCallback = FB.login.calls.argsFor(0)[0];
+                getLoginStatusCallback(response);
+
+                expect(this.pictures.fetchPicturesFromFb).toHaveBeenCalled();
+            });
+
+            it('Should reject the process if the login is not successful', function() {
+                // Create a mock response object
+                var response = jasmine.createSpy('response');
+                response.authResponse = false;
+
+                // Process the callback of FB.login()
+                var getLoginStatusCallback = FB.login.calls.argsFor(0)[0];
+                getLoginStatusCallback(response);
+
+                expect(this.deferred.rejectWith).toHaveBeenCalled();
             });
         });
 
         describe('When connected', function () {
-
-            beforeEach(function () {
+            it('Should call .fetchPicturesFromFb()', function() {
                 // Create a mock response object
                 var response = jasmine.createSpy('response');
                 response.status = 'connected';
@@ -115,58 +154,81 @@ describe('LocalizePict.Collection.PicturesModule.Facebook', function () {
                 // Process the callback of FB.getScript()
                 var getLoginStatusCallback = FB.getLoginStatus.calls.argsFor(0)[0];
                 getLoginStatusCallback(response);
-            });
 
-            describe('Tagged pictures', function () {
-
-                it('Should call .getPicturesFromFb()', function () {
-                    expect(this.pictures.getPicturesFromFb).toHaveBeenCalledWith('/me/photos/');
-                });
-
-                it('Should not add pictures when .getPicturesFromFb() is not resolved', function () {
-                    expect(this.pictures.add).not.toHaveBeenCalled();
-                });
-
-                it('Should not add pictures when .getPicturesFromFb() is resolved with an empty array of pictures', function () {
-                    this.deferredTagged.resolve([]);
-                    expect(this.pictures.add).not.toHaveBeenCalled();
-                });
-
-                it('Should add pictures when .getPicturesFromFb() is resolved', function () {
-                    this.deferredTagged.resolve(this.picts);
-                    expect(this.pictures.add).toHaveBeenCalledWith(this.picts);
-                });
-            });
-
-            describe('Uploaded pictures', function () {
-
-                it('Should call .getPicturesFromFb()', function () {
-                    expect(this.pictures.getPicturesFromFb).toHaveBeenCalledWith('/me/photos/?type=uploaded');
-                });
-
-                it('Should not add pictures when .getPicturesFromFb() is not resolved', function () {
-                    expect(this.pictures.add).not.toHaveBeenCalled();
-                });
-
-                it('Should not add pictures when .getPicturesFromFb() is resolved with an empty array of pictures', function () {
-                    this.deferredUploaded.resolve([]);
-                    expect(this.pictures.add).not.toHaveBeenCalled();
-                });
-
-                it('Should add pictures when .getPicturesFromFb() is resolved', function () {
-                    this.deferredUploaded.resolve(this.picts);
-                    expect(this.pictures.add).toHaveBeenCalledWith(this.picts);
-                });
-            });
-
-            it('Should resolve the process when tagged pictures and uploaded pictures are resolved', function () {
-                expect(this.overallDeferred.resolveWith).not.toHaveBeenCalled();
-                this.deferredTagged.resolve(this.picts);
-                expect(this.overallDeferred.resolveWith).not.toHaveBeenCalled();
-                this.deferredUploaded.resolve(this.picts);
-                expect(this.overallDeferred.resolveWith).toHaveBeenCalled();
+                expect(this.pictures.fetchPicturesFromFb).toHaveBeenCalled();
             });
         });
+    });
+
+    describe('.fetchPicturesFromFb()', function() {
+        beforeEach(function () {
+            /**
+             * Mocks
+             */
+            this.overallDeferred = $.Deferred();
+            this.deferredTagged = $.Deferred();
+            this.deferredUploaded = $.Deferred();
+
+            /**
+             * Spies
+             */
+            spyOn(this.pictures, 'add').and.callThrough();
+            spyOn(this.pictures, 'getPicturesFromFb').and.returnValues(this.deferredTagged, this.deferredUploaded);
+            spyOn(this.overallDeferred, 'resolveWith');
+
+            this.pictures.fetchPicturesFromFb(this.overallDeferred, null);
+        });
+
+        describe('Tagged pictures', function () {
+
+            it('Should call .getPicturesFromFb()', function () {
+                expect(this.pictures.getPicturesFromFb).toHaveBeenCalledWith('/me/photos/');
+            });
+
+            it('Should not add pictures when .getPicturesFromFb() is not resolved', function () {
+                expect(this.pictures.add).not.toHaveBeenCalled();
+            });
+
+            it('Should not add pictures when .getPicturesFromFb() is resolved with an empty array of pictures', function () {
+                this.deferredTagged.resolve([]);
+                expect(this.pictures.add).not.toHaveBeenCalled();
+            });
+
+            it('Should add pictures when .getPicturesFromFb() is resolved', function () {
+                this.deferredTagged.resolve(this.picts);
+                expect(this.pictures.add).toHaveBeenCalledWith(this.picts);
+            });
+        });
+
+        describe('Uploaded pictures', function () {
+
+            it('Should call .getPicturesFromFb()', function () {
+                expect(this.pictures.getPicturesFromFb).toHaveBeenCalledWith('/me/photos/?type=uploaded');
+            });
+
+            it('Should not add pictures when .getPicturesFromFb() is not resolved', function () {
+                expect(this.pictures.add).not.toHaveBeenCalled();
+            });
+
+            it('Should not add pictures when .getPicturesFromFb() is resolved with an empty array of pictures', function () {
+                this.deferredUploaded.resolve([]);
+                expect(this.pictures.add).not.toHaveBeenCalled();
+            });
+
+            it('Should add pictures when .getPicturesFromFb() is resolved', function () {
+                this.deferredUploaded.resolve(this.picts);
+                expect(this.pictures.add).toHaveBeenCalledWith(this.picts);
+            });
+        });
+
+        it('Should resolve the process when tagged pictures and uploaded pictures are resolved', function () {
+            expect(this.overallDeferred.resolveWith).not.toHaveBeenCalled();
+            this.deferredTagged.resolve(this.picts);
+            expect(this.overallDeferred.resolveWith).not.toHaveBeenCalled();
+            this.deferredUploaded.resolve(this.picts);
+            expect(this.overallDeferred.resolveWith).toHaveBeenCalled();
+        });
+
     });
 
     describe('.getPicturesFromFb()', function () {
@@ -186,6 +248,7 @@ describe('LocalizePict.Collection.PicturesModule.Facebook', function () {
              * Spies
              */
             spyOn(this.deferred, 'resolve');
+            spyOn(this.deferred, 'reject');
             spyOn($, 'Deferred').and.returnValues(this.deferred, this.nestedDeferred, this.nestedDeferred);
             FB = jasmine.createSpyObj('FB', [
                 'api'
@@ -235,13 +298,15 @@ describe('LocalizePict.Collection.PicturesModule.Facebook', function () {
             });
 
             describe('With a non standard JSON (empty or corrupted JSON)', function () {
-                it('Should throw an error with an empty string as JSON', function () {
-                    expect(this.apiCallback.bind(null, '')).toThrow();
+                it('Should reject the process with an empty string as JSON', function () {
+                    this.apiCallback('');
+                    expect(this.deferred.reject).toHaveBeenCalled();
                     expect(this.deferred.resolve).not.toHaveBeenCalled();
                 });
 
                 it('Should throw an error with a corrupted JSON', function () {
-                    expect(this.apiCallback.bind(null, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus vitae rutrum est. Pellentesque ut ligula nec justo porta pretium. Aliquam.')).toThrow();
+                    this.apiCallback('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus vitae rutrum est. Pellentesque ut ligula nec justo porta pretium. Aliquam.');
+                    expect(this.deferred.reject).toHaveBeenCalled();
                     expect(this.deferred.resolve).not.toHaveBeenCalled();
                 });
             });

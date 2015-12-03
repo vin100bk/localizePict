@@ -7,7 +7,7 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
 
     /** Events */
     events: {
-        'click a.add-picts': 'addPictures',
+        'click a.provider': 'addPictures',
         'click a.remove-picts': 'removePicts',
         'click a.refresh-picts': 'refreshPicts'
     },
@@ -238,9 +238,9 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
                     this.addNotice(message);
                     element.addClass('active active-animated');
                 })
-                .fail(function (e) {
+                .fail(function (message) {
                     this.removeOverlayNotices();
-                    this.showError(e.message + '<br />We are sorry for the inconvenience, please try again later.');
+                    this.showError(message);
                 });
         }
     },
@@ -261,7 +261,7 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
         if(this.noticesTimer) {
             clearTimeout(this.noticesTimer);
         }
-        this.noticesTimer = setTimeout(this.closeNotices, 3000);
+        this.noticesTimer = setTimeout(this.closeNotices, 6000);
     },
 
     /**
@@ -324,7 +324,7 @@ LocalizePict.View.Map = LocalizePict.View.Abstract.extend({
         }
 
         this.removePicts(null, element.siblings('.remove-picts'));
-        this.addPictures(null, element.closest('li').find('.add-picts'));
+        this.addPictures(null, element.closest('li').find('.provider'));
     }
 
 });

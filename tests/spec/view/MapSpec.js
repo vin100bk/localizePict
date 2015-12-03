@@ -270,9 +270,9 @@ describe('LocalizePict.View.Map', function () {
         });
 
         it('Should show an error when the process fail', function () {
-            this.deferred.rejectWith(this.app, [{name: 'MyError', message: 'MyMessage'}]);
+            this.deferred.rejectWith(this.app, ['MyMessage']);
             expect(this.app.removeOverlayNotices).toHaveBeenCalled();
-            expect(this.app.showError).toHaveBeenCalledWith('MyMessage<br />We are sorry for the inconvenience, please try again later.');
+            expect(this.app.showError).toHaveBeenCalledWith('MyMessage');
         });
 
         it('Should show provider options if pictures are already added', function() {
@@ -300,7 +300,7 @@ describe('LocalizePict.View.Map', function () {
             jasmine.clock().install();
             spyOn(this.app, 'closeNotices');
             this.app.addNotice('Notice1');
-            jasmine.clock().tick(4000);
+            jasmine.clock().tick(7000);
             expect(this.app.closeNotices).toHaveBeenCalled();
             jasmine.clock().uninstall();
         });
