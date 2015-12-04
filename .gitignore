@@ -2,3 +2,5 @@
 .DS_Store
 .sass-cache
 src/css/*
+divshot.json
+.divshot-cache
