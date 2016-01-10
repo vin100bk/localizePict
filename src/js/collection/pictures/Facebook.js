@@ -42,7 +42,10 @@ LocalizePict.Collection.PicturesModule.Facebook = {
                         }.bind(this), {scope: 'user_photos'});
                     }
                 }.bind(this));
-            }.bind(this));
+            }.bind(this))
+            .fail(function () {
+                deferred.rejectWith(context, ['Error while connecting to Facebook.']);
+            });
 
         return deferred.promise();
     },
